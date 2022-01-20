@@ -21,7 +21,7 @@ class InkmeController extends Controller
 
         
         try{
-            if($data->name && $data->email && $data->password && $data->numtlf){
+            if(isset($data->name) && isset($data->email) && isset($data->password) && isset($data->numtlf)){
                 $user = new Usuario;
                 $user->name = $data->name;
                 $user->email = $data->email;//validar email
@@ -55,9 +55,9 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            if($data->email && $data->password){
+            if(isset($data->email) && isset($data->password)){
                 //comprobar email
-                $user = User::where('email', $data->email)->first();
+                $user = Usuario::where('email', $data->email)->first();
                 if ($user == null){
                     throw new Exception("Error: Email no existe");
                 }
@@ -66,7 +66,7 @@ class InkmeController extends Controller
                     throw new Exception("Contraseña incorrecta");
                 }                
                 //crear token y guardarlo
-                $allTokens = User::pluck('api_token')->toArray();
+                $allTokens = Usuario::pluck('api_token')->toArray();
                 do {
                     $user->api_token = Hash::make(now().$user->email);
                 } while (in_array($user->api_token, $allTokens)); //En bucle mientras que el apitoken esté duplicado
