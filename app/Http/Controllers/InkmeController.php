@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use App\Models\Post;
+use App\Models\Estudio;
 use Exception;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
@@ -49,6 +51,7 @@ class InkmeController extends Controller
         
         return response()->json($response);
     }
+
     public function login(Request $req){ //Pide: api_token, email y password || Devuelve: "status" "msg" y "api_token" (si ha iniciado bien)
         $jdata = $req->getContent();
         $data = json_decode($jdata);
@@ -77,6 +80,92 @@ class InkmeController extends Controller
 
             }else{
                 throw new Exception("Error: Introduce email y password");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function crearPost(Request $req){ //Pide:api_token titulo, descripcion(opcional) foto estilo bcolor || Devuelve: "status" "msg" y "post_id"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->title) && isset($data->photo) && isset($data->style) && isset($data->bcolor)){
+                $post = new Post;
+                //checkear q existe el usuario con el apitoken
+                $user = Usuario::where('api_token', $data->api_token)->first();
+                if(!isset($user)){ //no deberia entrar aqui si el middleware va bn
+                    throw new Exception("Error: No se encuentra el usuario");
+                }
+                $post->user_id = $data->user_id;
+                $post->title = $data->title;
+                $post->description = $data->description;
+                $post->photo = $data->photo;
+                $post->bcolor = $data->bcolor;
+                $post->save();
+                $response["msg"]="Post creado";
+                $response["post_id"]=$post->id;
+            }else{
+                throw new Exception("Error: Introduce api_token, titulo, descripcion, foto, estilo y bcolor (boolean)");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function cargarPost(Request $req){ //Pide: post_id || Devuelve: "status" "msg" y "post"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->post_id)){
+                $post = Post::find($data->post_id);
+                if(!isset($post)){
+                    throw new Exception("Error: No se encuentra el post.");
+                }
+                $response["msg"]="Post encontrado.";
+                $response["post"] = $post;
+            }else{
+                throw new Exception("Error: Introduce post_id");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function cargarPerfil(Request $req){ //Pide: usuario_id || Devuelve el objeto usuario con nombre email foto ubicacion posts(con total de post e informacion de cada post (id y URL de la imagen))
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->usuario_id)){
+                $usuario = Usuario::find($data->usuario_id);
+                if(!isset($usuario)){
+                    throw new Exception("Error: No se encuentra el usuario.");
+                }
+                $response["msg"]="usuario encontrado.";
+
+                $response["usuario"]["nombre"] = $usuario->name;
+                $response["usuario"]["email"] = $usuario->email;
+                $response["usuario"]["foto"] = $usuario->profile_picture;
+                $response["usuario"]["ubicacion"] = $usuario->location;
+
+                $arrayImagenesURL = Post::where('user_id',$data->usuario_id)->pluck('id','photo')->toArray();
+                $numeroPosts = count($arrayImagenesURL);
+                $response["usuario"]["posts"]["total"] = $numeroPosts;
+                $response["usuario"]["posts"]["info"] = $arrayImagenesURL;
+            }else{
+                throw new Exception("Error: Introduce usuario_id");
             }
         }catch(\Exception $e){
             $response["status"]=0;
