@@ -101,7 +101,7 @@ class InkmeController extends Controller
                 if(!isset($user)){ //no deberia entrar aqui si el middleware va bn
                     throw new Exception("Error: No se encuentra el usuario");
                 }
-                $post->user_id = $data->user_id;
+                $post->user_id = $user->user_id;
                 $post->title = $data->title;
                 $post->description = $data->description;
                 $post->photo = $data->photo;
