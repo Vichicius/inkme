@@ -21,3 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::put('/register', [InkmeController::class,'register']); 
 Route::put('/login', [InkmeController::class,'login']); 
+
+
+Route::put('/crearPost', [InkmeController::class,'crearPost']); 
+Route::put('/cargarPost', [InkmeController::class,'cargarPost']); 
+Route::put('/cargarPerfil', [InkmeController::class,'cargarPerfil']); 
