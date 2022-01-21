@@ -88,7 +88,7 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function crearPost(Request $req){ //Pide:api_token titulo, descripcion(opcional) foto estilo bcolor || Devuelve: "status" "msg" y "post_id"
+    public function crearPost(Request $req){ //Pide:api_token title, description(opcional) photo style bcolor || Devuelve: "status" "msg" y "post_id"
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -101,10 +101,11 @@ class InkmeController extends Controller
                 if(!isset($user)){ //no deberia entrar aqui si el middleware va bn
                     throw new Exception("Error: No se encuentra el usuario");
                 }
-                $post->user_id = $user->user_id;
+                $post->user_id = $user->id;
                 $post->title = $data->title;
                 $post->description = $data->description;
                 $post->photo = $data->photo;
+                $post->style = $data->style;
                 $post->bcolor = $data->bcolor;
                 $post->save();
                 $response["msg"]="Post creado";
@@ -159,6 +160,7 @@ class InkmeController extends Controller
                 $response["usuario"]["email"] = $usuario->email;
                 $response["usuario"]["foto"] = $usuario->profile_picture;
                 $response["usuario"]["ubicacion"] = $usuario->location;
+                $response["usuario"]["estudio_id"] = $usuario->estudio_id;
 
                 $arrayImagenesURL = Post::where('user_id',$data->usuario_id)->pluck('id','photo')->toArray();
                 $numeroPosts = count($arrayImagenesURL);
