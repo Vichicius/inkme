@@ -24,6 +24,9 @@ class login
         $response["status"] = 1;
 
         try{
+            if(!isset($data->api_token)){
+                throw new Exception("Error: Introduce api_token");
+            }
             $usuario = Usuario::where('api_token', $data->api_token)->first();
 
             if(!isset($usuario)){
