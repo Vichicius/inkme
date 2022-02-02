@@ -21,17 +21,23 @@ class InkmeController extends Controller
         $data = json_decode($jdata);
         $response["status"]=1;
 
-        
+
         try{
             if(isset($data->name) && isset($data->email) && isset($data->password) && isset($data->numtlf)){
                 $user = new Usuario;
                 $user->name = $data->name;
-                $user->email = $data->email;//validar email
+                //validar email
+                if(!preg_match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$^", $data->email)) {
+                    throw new Exception("Error: Email no válido");
+                }
+                $user->email = $data->email;
+                //validar contraseña
                 if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}/", $data->password)){
                     $user->password = Hash::make($data->password);
                 }else{
                     throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 caracter especial y 1 número");
                 }
+                //validar tlf
                 if($data->numtlf >= 100000000 && $data->numtlf <= 999999999){
                     $user->numtlf = $data->numtlf;
                 }else{
@@ -48,7 +54,7 @@ class InkmeController extends Controller
             $response["status"]=0;
             $response["msg"]="Error al intentar guardar el usuario: ".$e->getMessage();
         }
-        
+
         return response()->json($response);
     }
 
@@ -67,7 +73,7 @@ class InkmeController extends Controller
                 //comprobar que la contraseña coincide con la asociada al email
                 if(!Hash::check($data->password, $user->password)){
                     throw new Exception("Contraseña incorrecta");
-                }                
+                }
                 //crear token y guardarlo
                 $allTokens = Usuario::pluck('api_token')->toArray();
                 do {
