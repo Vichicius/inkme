@@ -33,6 +33,7 @@ class login
                 throw new Exception("Error: ese token no existe");
             }
 
+            $request->attributes->add(['usuario' => $usuario]);
             return $next($request);
 
         }catch(\Exception $e){

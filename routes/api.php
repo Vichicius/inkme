@@ -22,6 +22,8 @@ Route::put('/login', [InkmeController::class,'login']);
 
 Route::middleware('login')->group(function () {
     Route::put('/crearPost', [InkmeController::class,'crearPost']);
-    Route::put('/cargarPost', [InkmeController::class,'cargarPost']);
-    Route::put('/cargarPerfil', [InkmeController::class,'cargarPerfil']);
 });
+
+
+Route::put('/cargarPost', [InkmeController::class,'cargarPost']);
+Route::put('/cargarPerfil', [InkmeController::class,'cargarPerfil']);

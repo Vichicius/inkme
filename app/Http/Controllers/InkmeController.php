@@ -10,6 +10,7 @@ use Exception;
 use DateTime;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 //use App\Mail\OrderShipped;
 use Illuminate\Support\Str;
 
@@ -100,25 +101,32 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            if(isset($data->title) && isset($data->photo) && isset($data->style) && isset($data->bcolor)){
-                $post = new Post;
-                //checkear q existe el usuario con el apitoken
-                $user = Usuario::where('api_token', $data->api_token)->first();
-                if(!isset($user)){ //no deberia entrar aqui si el middleware va bn
-                    throw new Exception("Error: No se encuentra el usuario");
-                }
-                $post->user_id = $user->id;
-                $post->title = $data->title;
-                $post->description = $data->description;
-                $post->photo = $data->photo;
-                $post->style = $data->style;
-                $post->bcolor = $data->bcolor;
-                $post->save();
-                $response["msg"]="Post creado";
-                $response["post_id"]=$post->id;
-            }else{
-                throw new Exception("Error: Introduce api_token, titulo, descripcion, foto, estilo y bcolor (boolean)");
+            $validator = Validator::make(json_decode($data, true), [
+                'title' => 'required|string|max:40',
+                'description' => 'required|string|max:255',
+                'photo' => 'required|string',
+                'style' => 'required|string',
+                'bcolor' => 'required|boolean',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
             }
+
+            $post = new Post;
+            //coger el usuario que ha sido guardado en el middleware de login
+            $user = $data->usuario;
+
+            $post->user_id = $user->id;
+            $post->title = $data->title;
+            $post->description = $data->description;
+            $post->photo = $data->photo;
+            $post->style = $data->style;
+            $post->bcolor = $data->bcolor;
+            $post->save();
+            $response["msg"]="Post creado";
+            $response["post_id"]=$post->id;
+
         }catch(\Exception $e){
             $response["status"]=0;
             $response["msg"]=$e->getMessage();
