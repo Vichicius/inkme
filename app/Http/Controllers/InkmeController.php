@@ -288,4 +288,52 @@ class InkmeController extends Controller
         }
         return response()->json($response);
     }
+
+    public function editarPerfil(Request $req){ //Pide: api_token, campos a editar || Devuelve: "status" "msg"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            $validator = Validator::make(json_decode($data, true), [
+                'name' => 'string|max:40',
+                'email' => 'string|max:255|email:rfc,dns|unique:usuarios',
+                'password' => 'string',
+                'numtlf' => 'integer|max:999999999',
+                'profile_picture' => 'string',
+                'location' => 'string',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+
+            //coger el usuario que ha sido guardado en el middleware de login
+            $user = $data->usuario;
+
+            if(isset($data->name)) $user->name = $data->name;
+            if(isset($data->email)) $user->email = $data->email;
+            if(isset($data->password)){
+                //validar contraseña
+                if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}/", $data->password)){
+                    $user->password = Hash::make($data->password);
+                }else{
+                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 caracter especial y 1 número");
+                }
+            }
+            if(isset($data->numtlf)) $user->numtlf = $data->numtlf;
+            if(isset($data->profile_picture)) $user->profile_picture = $data->profile_picture;
+            if(isset($data->location)) $user->location = $data->location;
+
+            $user->save();
+
+            $response["msg"]="Usuario editado";
+            $response["user_id"]=$user->id;
+
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
