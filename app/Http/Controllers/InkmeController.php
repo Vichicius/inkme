@@ -406,4 +406,30 @@ class InkmeController extends Controller
         }
         return response()->json($response);
     }
+
+    public function fetchFeed(Request $req){ //Pide: nada || Devuelve: Un usuario con 3 posts suyos (usuario_id, usuario_photo, usuario_name, )
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            //me puede pasar ubicacion y etiquetas
+            $usuarios = Usuario::all('id','name','profile_picture','location');
+            $lista1 = [];
+            $lista2 = [];
+            foreach ($usuarios as $key => $usuario) {
+                array_push($lista1, [
+                    "id"=>$usuario->id,
+                    "name"=>$usuario->name,
+                    "profile_picture"=>$usuario->profile_picture,
+                    "location"=>$usuario->location,
+                ]);
+            }
+            $response["usuarios"] = $lista2;
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
