@@ -20,6 +20,7 @@ class CreateUsuariosTable extends Migration
             $table->string('password');
             $table->integer('numtlf');
             $table->string('profile_picture')->nullable();
+            $table->string('styles')->nullable();
             $table->string('api_token')->unique()->nullable();
             $table->string('location')->nullable();
             $table->integer('views')->nullable(); //Dicen de quitar esto

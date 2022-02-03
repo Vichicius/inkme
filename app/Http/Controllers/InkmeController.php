@@ -302,6 +302,7 @@ class InkmeController extends Controller
                 'numtlf' => 'integer|max:999999999',
                 'profile_picture' => 'string',
                 'location' => 'string',
+                'styles' => 'string',
             ]);
 
             if ($validator->fails()) {
@@ -324,7 +325,14 @@ class InkmeController extends Controller
             if(isset($data->numtlf)) $user->numtlf = $data->numtlf;
             if(isset($data->profile_picture)) $user->profile_picture = $data->profile_picture;
             if(isset($data->location)) $user->location = $data->location;
-
+            if(isset($data->styles)){
+                //validar estilos blackwork, tradicional, tradicional-japones, realista, neotradi, ignorant
+                if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
+                    $user->styles = $data->styles;
+                }else{
+                    throw new Exception("Introduce los estilos de la siguiente forma: 'estilo1','estilo2','estilo3',...");
+                }
+            }
             $user->save();
 
             $response["msg"]="Usuario editado";
@@ -414,22 +422,41 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             //me puede pasar ubicacion y etiquetas
-            $usuarios = Usuario::all('id','name','profile_picture','location');
+            if(isset($data->styles)){
+                $usuarios = Usuario::where('styles','like','%'.$data->location.'%')->get('id','name','profile_picture','location','styles');
+            }else{
+                $usuarios = Usuario::all('id','name','profile_picture','location','styles');
+            }
+            if(isset($data->location)){
+                foreach ($usuarios as $key => $usuario) {
+                    # code...
+                }
+            }
+
             $lista1 = [];
-            $lista2 = [];
             foreach ($usuarios as $key => $usuario) {
+                $posts = Post::where('usuario_id', $usuario->id)->get('id', 'usuario_id', 'photo');
                 array_push($lista1, [
                     "id"=>$usuario->id,
                     "name"=>$usuario->name,
                     "profile_picture"=>$usuario->profile_picture,
                     "location"=>$usuario->location,
+                    "styles"=>$usuario->styles,
+                    "posts"=>$posts
                 ]);
             }
-            $response["usuarios"] = $lista2;
+            $response["usuarios"] = $lista1;
         }catch(\Exception $e){
             $response["status"]=0;
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
     }
+    /*
+    if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
+        $user->styles = $data->styles;
+    }else{
+        throw new Exception("Introduce los estilos de la siguiente forma: 'estilo1','estilo2','estilo3',...");
+    }
+    */
 }
