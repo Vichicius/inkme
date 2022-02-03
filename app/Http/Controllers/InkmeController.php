@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Articulo;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Post;
@@ -176,7 +177,7 @@ class InkmeController extends Controller
                 $response["usuario"]["ubicacion"] = $usuario->location;
                 $response["usuario"]["estudio_id"] = $usuario->estudio_id;
 
-                $arrayImagenesURL = Post::where('user_id',$data->usuario_id)->pluck('id','photo')->toArray();
+                $arrayImagenesURL = Post::where('user_id',$data->usuario_id)->pluck('photo','id')->toArray();
                 $numeroPosts = count($arrayImagenesURL);
                 $response["usuario"]["posts"]["total"] = $numeroPosts;
                 $response["usuario"]["posts"]["info"] = $arrayImagenesURL;
@@ -190,4 +191,101 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
+    public function crearMerch(Request $req){ //Pide:api_token name, description(opcional) photo price || Devuelve: "status" "msg" y "articulo_id"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            $validator = Validator::make(json_decode($data, true), [
+                'name' => 'required|string|max:50',
+                'description' => 'string|max:255',
+                'photo' => 'required|string|max:255',
+                'price' => 'required|integer|max:999999',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+
+            $articulo = new Articulo;
+            //coger el usuario que ha sido guardado en el middleware de login
+            $user = $data->usuario;
+
+            $articulo->user_id = $user->id;
+            $articulo->name = $data->name;
+            $articulo->description = $data->description;
+            $articulo->photo = $data->photo;
+            $articulo->price = $data->price;
+            $articulo->save();
+            $response["msg"]="Articulo creado";
+            $response["articulo_id"]=$articulo->id;
+
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function cargarMerchLista(Request $req){ //Pide: usuario_id || Devuelve lista de los ids de los articulos que tiene el usuario junto con su foto
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->usuario_id)){
+                //compruebo que existe el usuario
+                $usuario = Usuario::find($data->usuario_id);
+                if(!isset($usuario)){
+                    throw new Exception("Error: No se encuentra el usuario.");
+                }
+                $listaArticulos = Articulo::where('usuario_id', $data->usuario_id)->get();
+                if(count($listaArticulos) == 0){
+                    throw new Exception("No tiene ningún articulo en venta.");
+                }
+
+                foreach ($listaArticulos as $key => $articulo) {
+                    $response[$articulo->id] = $articulo->photo;
+                }
+            }else{
+                throw new Exception("Error: Introduce usuario_id");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function cargarMerchArticulo(Request $req){ //Pide: articulo_id || Devuelve objeto articulo
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->articulo_id)){
+                //compruebo que existe el articulo
+                $articulo = Articulo::find($data->articulo_id);
+                if(!isset($articulo)){
+                    throw new Exception("Error: No se encuentra el articulo.");
+                }
+                $response["articulo"] = $articulo;
+                // $response = [
+                //     "status"=>1,
+                //     [
+                //         "id" => $articulo->id,
+                //         "id" => $articulo
+                //         "id" => $articulo
+                //     ]
+                // ];
+            }else{
+                throw new Exception("Error: Introduce articulo_id");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
