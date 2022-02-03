@@ -22,6 +22,7 @@ class CreateEstudiosTable extends Migration
             $table->string('api_token')->unique()->nullable();
             $table->string('location');
             $table->integer('views');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

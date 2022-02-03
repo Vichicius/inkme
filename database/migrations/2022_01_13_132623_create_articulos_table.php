@@ -20,6 +20,7 @@ class CreateArticulosTable extends Migration
             $table->string('description')->nullable();
             $table->string('photo');
             $table->integer('price');
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

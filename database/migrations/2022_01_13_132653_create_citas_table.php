@@ -20,6 +20,7 @@ class CreateCitasTable extends Migration
             $table->string('title');
             $table->string('client_name')->nullable();
             $table->string('tattoo_description')->nullable();
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

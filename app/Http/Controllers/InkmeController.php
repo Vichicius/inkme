@@ -143,7 +143,7 @@ class InkmeController extends Controller
         try{
             if(isset($data->post_id)){
                 $post = Post::find($data->post_id);
-                if(!isset($post)){
+                if(!isset($post) || $post->active == false){
                     throw new Exception("Error: No se encuentra el post.");
                 }
                 $response["msg"]="Post encontrado.";
@@ -166,7 +166,7 @@ class InkmeController extends Controller
         try{
             if(isset($data->usuario_id)){
                 $usuario = Usuario::find($data->usuario_id);
-                if(!isset($usuario)){
+                if(!isset($usuario)|| $usuario->active == false){
                     throw new Exception("Error: No se encuentra el usuario.");
                 }
                 $response["msg"]="usuario encontrado.";
@@ -267,7 +267,7 @@ class InkmeController extends Controller
             if(isset($data->articulo_id)){
                 //compruebo que existe el articulo
                 $articulo = Articulo::find($data->articulo_id);
-                if(!isset($articulo)){
+                if(!isset($articulo)|| $articulo->active == false){
                     throw new Exception("Error: No se encuentra el articulo.");
                 }
                 $response["articulo"] = $articulo;
@@ -329,6 +329,76 @@ class InkmeController extends Controller
 
             $response["msg"]="Usuario editado";
             $response["user_id"]=$user->id;
+
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function borrarPost(Request $req){ //Pide: api_token, post_id || Devuelve: "status" "msg"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            $validator = Validator::make(json_decode($data, true), [
+                'post_id' => 'exists:posts, id',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+
+            //coger el usuario que ha sido guardado en el middleware de login
+            $user = $data->usuario;
+            $post = Post::find($data->post_id);
+
+            if($post->user_id != $user->id){
+                throw new Exception("Error: Este post no corresponde a este usuario (usuario: $user->id, post: $post->id");
+            }
+
+            $post->active = false;
+
+            $post->save();
+
+            $response["msg"]="Post borrado";
+
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function borrarArticulo(Request $req){ //Pide: api_token, articulo_id || Devuelve: "status" "msg"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            $validator = Validator::make(json_decode($data, true), [
+                'articulo_id' => 'exists:articulos, id',
+            ]);
+
+            if ($validator->fails()) {
+                throw new Exception($validator->errors()->first());
+            }
+
+            //coger el usuario que ha sido guardado en el middleware de login
+            $user = $data->usuario;
+            $articulo = Articulo::find($data->articulo_id);
+
+            if($articulo->user_id != $user->id){
+                throw new Exception("Error: Este articulo no corresponde a este usuario (usuario: $user->id, post: $articulo->id");
+            }
+
+            $articulo->active = false;
+
+            $articulo->save();
+
+            $response["msg"]="Articulo borrado";
 
         }catch(\Exception $e){
             $response["status"]=0;
