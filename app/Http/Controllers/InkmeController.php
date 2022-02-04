@@ -177,10 +177,17 @@ class InkmeController extends Controller
                 $response["usuario"]["ubicacion"] = $usuario->location;
                 $response["usuario"]["estudio_id"] = $usuario->estudio_id;
 
-                $arrayImagenesURL = Post::where('user_id',$data->usuario_id)->pluck('photo','id')->toArray();
-                $numeroPosts = count($arrayImagenesURL);
-                $response["usuario"]["posts"]["total"] = $numeroPosts;
-                $response["usuario"]["posts"]["info"] = $arrayImagenesURL;
+                $ImagenesURLeID = Post::where('user_id',$data->usuario_id)->get(['id','photo']);
+                $posts = [];
+                $infopost = [];
+                foreach ($ImagenesURLeID as $key => $value) {
+                    $infopost = [
+                        "id" => $value->id,
+                        "url" => $value->photo
+                    ];
+                    array_push($posts, $infopost);
+                }
+                $response["usuario"]["posts"] = $posts;
             }else{
                 throw new Exception("Error: Introduce usuario_id");
             }
