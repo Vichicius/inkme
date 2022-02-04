@@ -451,6 +451,15 @@ class InkmeController extends Controller
             }else{
                 $usuarios = Usuario::all('id','name','profile_picture','location','styles');
             }
+            if(isset($data->name)){ //filtro de nombre
+                $usuarios1 = $usuarios;
+                $usuarios = [];
+                foreach ($usuarios1 as $key => $usuario) {
+                    if(str_contains($usuario->name, $data->name)){
+                        array_push($usuarios, $usuario);
+                    }
+                }
+            }
             if(count($usuarios) == 0) {
                 throw new Exception("No hay coincidencias.");
             }
