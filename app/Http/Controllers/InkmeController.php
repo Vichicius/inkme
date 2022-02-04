@@ -204,7 +204,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            $validator = Validator::make(json_decode($data, true), [
+            $validator = Validator::make(json_decode($jdata, true), [
                 'name' => 'required|string|max:50',
                 'description' => 'string|max:255',
                 'photo' => 'required|string|max:255',
@@ -302,7 +302,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            $validator = Validator::make(json_decode($data, true), [
+            $validator = Validator::make(json_decode($jdata, true), [
                 'name' => 'string|max:40',
                 'email' => 'string|max:255|email:rfc,dns|unique:usuarios',
                 'password' => 'string',
@@ -361,7 +361,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            $validator = Validator::make(json_decode($data, true), [
+            $validator = Validator::make(json_decode($jdata, true), [
                 'post_id' => 'exists:posts, id',
             ]);
 
@@ -396,7 +396,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            $validator = Validator::make(json_decode($data, true), [
+            $validator = Validator::make(json_decode($jdata, true), [
                 'articulo_id' => 'exists:articulos, id',
             ]);
 
