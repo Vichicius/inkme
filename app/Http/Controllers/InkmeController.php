@@ -34,10 +34,10 @@ class InkmeController extends Controller
                 }
                 $user->email = $data->email;
                 //validar contraseña
-                if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}/", $data->password)){
+                if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}/", $data->password)){
                     $user->password = Hash::make($data->password);
                 }else{
-                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 caracter especial y 1 número");
+                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud");
                 }
                 //validar tlf
                 if($data->numtlf >= 100000000 && $data->numtlf <= 999999999){
@@ -50,7 +50,7 @@ class InkmeController extends Controller
                 $response["msg"]="Guardado con éxito";
                 $response["usuario_id"]=$user->id;
             }else{
-                throw new Exception("Introduce name, email, password, profile_picture y location");
+                throw new Exception("Introduce name, email, password y numtlf");
             }
         }catch(\Exception $e){
             $response["status"]=0;
@@ -70,11 +70,11 @@ class InkmeController extends Controller
                 //comprobar email
                 $user = Usuario::where('email', $data->email)->first();
                 if ($user == null){
-                    throw new Exception("Error: Email no existe");
+                    throw new Exception("Error: El email o la contraseña no es correcto");
                 }
                 //comprobar que la contraseña coincide con la asociada al email
                 if(!Hash::check($data->password, $user->password)){
-                    throw new Exception("Contraseña incorrecta");
+                    throw new Exception("Error: El email o la contraseña no es correcto");
                 }
                 //crear token y guardarlo
                 $allTokens = Usuario::pluck('api_token')->toArray();
