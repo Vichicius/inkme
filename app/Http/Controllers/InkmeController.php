@@ -102,7 +102,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
-            $validator = Validator::make(json_decode($data, true), [
+            $validator = Validator::make(json_decode($jdata, true), [
                 'title' => 'required|string|max:40',
                 'description' => 'required|string|max:255',
                 'photo' => 'required|string',
@@ -116,7 +116,7 @@ class InkmeController extends Controller
 
             $post = new Post;
             //coger el usuario que ha sido guardado en el middleware de login
-            $user = $data->usuario;
+            $user = $req->get('usuario');
 
             $post->user_id = $user->id;
             $post->title = $data->title;
@@ -210,7 +210,7 @@ class InkmeController extends Controller
 
             $articulo = new Articulo;
             //coger el usuario que ha sido guardado en el middleware de login
-            $user = $data->usuario;
+            $user = $req->get('usuario');
 
             $articulo->user_id = $user->id;
             $articulo->name = $data->name;
@@ -310,7 +310,7 @@ class InkmeController extends Controller
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
-            $user = $data->usuario;
+            $user = $req->get('usuario');
 
             if(isset($data->name)) $user->name = $data->name;
             if(isset($data->email)) $user->email = $data->email;
@@ -363,7 +363,7 @@ class InkmeController extends Controller
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
-            $user = $data->usuario;
+            $user = $req->get('usuario');
             $post = Post::find($data->post_id);
 
             if($post->user_id != $user->id){
@@ -398,7 +398,7 @@ class InkmeController extends Controller
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
-            $user = $data->usuario;
+            $user = $req->get('usuario');
             $articulo = Articulo::find($data->articulo_id);
 
             if($articulo->user_id != $user->id){
