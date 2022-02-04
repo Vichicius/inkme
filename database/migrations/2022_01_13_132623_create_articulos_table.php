@@ -19,7 +19,7 @@ class CreateArticulosTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('photo');
-            $table->integer('price');
+            $table->float('price');
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
