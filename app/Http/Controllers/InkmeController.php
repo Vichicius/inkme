@@ -177,13 +177,13 @@ class InkmeController extends Controller
                 $response["usuario"]["ubicacion"] = $usuario->location;
                 $response["usuario"]["estudio_id"] = $usuario->estudio_id;
 
-                $ImagenesURLeID = Post::where('user_id',$data->usuario_id)->get(['id','photo']);
+                $ImagenesURLeID = Post::where('user_id',$data->usuario_id)->where('active',1)->get(['id','photo']);
                 $posts = [];
                 $infopost = [];
                 foreach ($ImagenesURLeID as $key => $value) {
                     $infopost = [
                         "id" => $value->id,
-                        "url" => $value->photo
+                        "photo" => $value->photo
                     ];
                     array_push($posts, $infopost);
                 }
@@ -247,14 +247,11 @@ class InkmeController extends Controller
                 if(!isset($usuario)){
                     throw new Exception("Error: No se encuentra el usuario.");
                 }
-                $listaArticulos = Articulo::where('usuario_id', $data->usuario_id)->get();
+                $listaArticulos = Articulo::where('user_id', $data->usuario_id)->where('active',1)->get();
                 if(count($listaArticulos) == 0){
                     throw new Exception("No tiene ningún articulo en venta.");
                 }
-
-                foreach ($listaArticulos as $key => $articulo) {
-                    $response[$articulo->id] = $articulo->photo;
-                }
+                $response["articulos"] = $listaArticulos;
             }else{
                 throw new Exception("Error: Introduce usuario_id");
             }
@@ -323,10 +320,10 @@ class InkmeController extends Controller
             if(isset($data->email)) $user->email = $data->email;
             if(isset($data->password)){
                 //validar contraseña
-                if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}/", $data->password)){
+                if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}/", $data->password)){
                     $user->password = Hash::make($data->password);
                 }else{
-                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 caracter especial y 1 número");
+                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud");
                 }
             }
             if(isset($data->numtlf)) $user->numtlf = $data->numtlf;
@@ -362,7 +359,7 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             $validator = Validator::make(json_decode($jdata, true), [
-                'post_id' => 'exists:posts, id',
+                'post_id' => 'exists:posts,id',
             ]);
 
             if ($validator->fails()) {
@@ -397,7 +394,7 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             $validator = Validator::make(json_decode($jdata, true), [
-                'articulo_id' => 'exists:articulos, id',
+                'articulo_id' => 'exists:articulos,id',
             ]);
 
             if ($validator->fails()) {
@@ -476,7 +473,7 @@ class InkmeController extends Controller
             //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
             $lista1 = [];
             foreach ($usuarios as $key => $usuario) {
-                $posts = Post::where('usuario_id', $usuario->id)->get('id', 'usuario_id', 'photo');
+                $posts = Post::where('user_id', $usuario->id)->get(['id', 'user_id', 'photo']);
                 array_push($lista1, [
                     "id"=>$usuario->id,
                     "name"=>$usuario->name,
