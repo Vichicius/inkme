@@ -325,12 +325,15 @@ class InkmeController extends Controller
             if(isset($data->numtlf)) $user->numtlf = $data->numtlf;
             if(isset($data->profile_picture)) $user->profile_picture = $data->profile_picture;
             if(isset($data->location)) $user->location = $data->location;
-            if(isset($data->styles)){
-                //validar estilos blackwork, tradicional, tradicional-japones, realista, neotradi, ignorant
+            if(isset($data->styles)){ //Probar----- lo esperado es que se guarde así-> estilo1, estilo2, estilo3,
+
+                if(!preg_match("/%,/", $data->styles)){ //si no termina en coma le añade una coma
+                    $data->styles = $data->styles.',';
+                }
                 if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
                     $user->styles = $data->styles;
                 }else{
-                    throw new Exception("Introduce los estilos de la siguiente forma: 'estilo1','estilo2','estilo3',...");
+                    throw new Exception("Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ");
                 }
             }
             $user->save();
@@ -423,16 +426,35 @@ class InkmeController extends Controller
         try{
             //me puede pasar ubicacion y etiquetas
             if(isset($data->styles)){
-                $usuarios = Usuario::where('styles','like','%'.$data->location.'%')->get('id','name','profile_picture','location','styles');
+                $estilos = explode(',',$data->styles);
+                $usuarios = [];
+                $usuariosIDsYaObtenidos = [];
+                foreach ($estilos as $key => $estilo) {
+                    $usuariosCoincidenConUnEstilo = [];
+
+                    if(isset($data->location)){ //si además de estilos me pasa ubicacion
+                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('style','like','%'.$estilo.','.'%')->get('id','name','profile_picture','location','styles');
+                    }else{
+                        $usuariosCoincidenConUnEstilo = Usuario::where('style','like','%'.$estilo.','.'%')->get('id','name','profile_picture','location','styles');
+                    }
+
+                    if(count($usuariosCoincidenConUnEstilo) == 0 ) continue;
+                    foreach ($usuariosCoincidenConUnEstilo as $key => $value) {
+                        if (!in_array($value->id, $usuariosIDsYaObtenidos)){ //probar si se puede quitar este array
+                            array_push($usuariosIDsYaObtenidos, $value->id); //y si funciona con inarray $usuarios, $value
+                            array_push($usuarios, $value);
+                        }
+                    }
+                }
+            }else if(isset($data->location)){
+                $usuarios = Usuario::where('location',$data->location)->get('id','name','profile_picture','location','styles');
             }else{
                 $usuarios = Usuario::all('id','name','profile_picture','location','styles');
             }
-            if(isset($data->location)){
-                foreach ($usuarios as $key => $usuario) {
-                    # code...
-                }
+            if(count($usuarios) == 0) {
+                throw new Exception("No hay coincidencias.");
             }
-
+            //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
             $lista1 = [];
             foreach ($usuarios as $key => $usuario) {
                 $posts = Post::where('usuario_id', $usuario->id)->get('id', 'usuario_id', 'photo');
