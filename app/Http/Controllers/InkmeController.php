@@ -453,10 +453,8 @@ class InkmeController extends Controller
             }else if(isset($data->location)){
                 $usuarios = Usuario::where('location',$data->location)->get('id','name','profile_picture','location','styles');
             }else{
-                $usuarios = Usuario::all('id','name','profile_picture','location','styles');
+                $usuarios = Usuario::all('id','name','profile_picture','location','styles')->shuffle();
                 //randomizar el orden de usuarios para que sea cada vez uno nuevo
-                $usuarios = $usuarios->toArray();
-                shuffle($usuarios); //all() es para pasarlo de collection a array
             }
             if(isset($data->name)){ //filtro de nombre
                 $usuarios1 = $usuarios;
