@@ -331,14 +331,15 @@ class InkmeController extends Controller
             if(isset($data->location)) $user->location = $data->location;
             if(isset($data->styles)){ //Probar----- lo esperado es que se guarde así-> estilo1, estilo2, estilo3,
 
-                if(!preg_match("/%,/", $data->styles)){ //si no termina en coma le añade una coma
-                    $data->styles = $data->styles.',';
+                $estilosExistentes = ["blackwork", "tradicional", "tradicional-japones", "realista", "neotradi", "ignorant"];
+                $inputEstilos = explode(",", $data->styles);
+                foreach ($inputEstilos as $key => $value) {
+                    if(!in_array($value, $estilosExistentes)){
+                        $response["estilos"] = $estilosExistentes;
+                        throw new Exception("El estilo $value no existe. Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ");
+                    }
                 }
-                if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
-                    $user->styles = $data->styles;
-                }else{
-                    throw new Exception("Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ");
-                }
+                $user->styles = $data->styles;
             }
             $user->save();
 
