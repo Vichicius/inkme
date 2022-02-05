@@ -176,6 +176,7 @@ class InkmeController extends Controller
                 $response["usuario"]["foto"] = $usuario->profile_picture;
                 $response["usuario"]["ubicacion"] = $usuario->location;
                 $response["usuario"]["estudio_id"] = $usuario->estudio_id;
+                $response["usuario"]["styles"] = $usuario->styles;
 
                 $ImagenesURLeID = Post::where('user_id',$data->usuario_id)->where('active',1)->get(['id','photo']);
                 $posts = [];
@@ -331,8 +332,12 @@ class InkmeController extends Controller
             if(isset($data->location)) $user->location = $data->location;
             if(isset($data->styles)){ //Probar----- lo esperado es que se guarde así-> estilo1, estilo2, estilo3,
 
+                if(!str_ends_with($data->styles, ",")){ //si no termina en coma le añade una coma
+                    $data->styles = $data->styles.',';  //Esto es para que las búsquedas de estilos sean más exactas (que no se confunda tradicional con tradicional-japones)
+                }
                 $estilosExistentes = ["blackwork", "tradicional", "tradicional-japones", "realista", "neotradi", "ignorant"];
                 $inputEstilos = explode(",", $data->styles);
+                array_pop($inputEstilos); //elimino el ultimo elemento ya que al hacer explode con , se queda un caracter vacío al final del array
                 foreach ($inputEstilos as $key => $value) {
                     if(!in_array($value, $estilosExistentes)){
                         $response["estilos"] = $estilosExistentes;
@@ -430,17 +435,17 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             //me puede pasar ubicacion y etiquetas
-            if(isset($data->styles)){
+            if(isset($data->styles) && $data->styles != ""){
                 $estilos = explode(',',$data->styles);
                 $usuarios = [];
                 $usuariosIDsYaObtenidos = [];
                 foreach ($estilos as $key => $estilo) {
                     $usuariosCoincidenConUnEstilo = [];
 
-                    if(isset($data->location)){ //si además de estilos me pasa ubicacion
-                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('style','like','%'.$estilo.','.'%')->get('id','name','profile_picture','location','styles');
+                    if(isset($data->location) && $data->location != ""){ //si además de estilos me pasa ubicacion
+                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('styles','like','%'.$estilo.','.'%')->get(['id','name','profile_picture','location','styles']);
                     }else{
-                        $usuariosCoincidenConUnEstilo = Usuario::where('style','like','%'.$estilo.','.'%')->get('id','name','profile_picture','location','styles');
+                        $usuariosCoincidenConUnEstilo = Usuario::where('styles','like','%'.$estilo.','.'%')->get(['id','name','profile_picture','location','styles']);
                     }
 
                     if(count($usuariosCoincidenConUnEstilo) == 0 ) continue;
@@ -451,13 +456,13 @@ class InkmeController extends Controller
                         }
                     }
                 }
-            }else if(isset($data->location)){
-                $usuarios = Usuario::where('location',$data->location)->get('id','name','profile_picture','location','styles');
+            }else if(isset($data->location) && $data->location != ""){
+                $usuarios = Usuario::where('location',$data->location)->get(['id','name','profile_picture','location','styles']);
             }else{
                 $usuarios = Usuario::all('id','name','profile_picture','location','styles')->shuffle();
                 //randomizar el orden de usuarios para que sea cada vez uno nuevo
             }
-            if(isset($data->name)){ //filtro de nombre
+            if(isset($data->name) && $data->name != ""){ //filtro de nombre
                 $usuarios1 = $usuarios;
                 $usuarios = [];
                 foreach ($usuarios1 as $key => $usuario) {
