@@ -135,7 +135,7 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function cargarPost(Request $req){ //Pide: post_id || Devuelve: "status" "msg" y "post" MG: 
+    public function cargarPost(Request $req){ //Pide: post_id || Devuelve: "status" "msg" y "post" MG:
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -146,8 +146,10 @@ class InkmeController extends Controller
                 if(!isset($post) || $post->active == false){
                     throw new Exception("Error: No se encuentra el post.");
                 }
+                $user = Usuario::find($post->user_id);
                 $response["msg"]="Post encontrado.";
                 $response["post"] = $post;
+                $response["usuario"] = $user;
             }else{
                 throw new Exception("Error: Introduce post_id");
             }
