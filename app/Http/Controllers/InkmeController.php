@@ -45,10 +45,16 @@ class InkmeController extends Controller
                 }else{
                     throw new Exception("Número de teléfono debe ser de 9 dígitos");
                 }
+                //crear token y guardarlo
+                $allTokens = Usuario::pluck('api_token')->toArray();
+                do {
+                    $user->api_token = Hash::make(now().$user->email);
+                } while (in_array($user->api_token, $allTokens)); //En bucle mientras que el apitoken esté duplicado
                 $user->views = 0;
                 $user->save();
                 $response["msg"]="Guardado con éxito";
-                $response["usuario_id"]=$user->id;
+                $response["api_token"]=$user->api_token;
+                $response["id"]=$user->id;
             }else{
                 throw new Exception("Introduce name, email, password y numtlf");
             }
@@ -85,6 +91,7 @@ class InkmeController extends Controller
                 //responder con token
                 $response["msg"]="Sesion iniciada";
                 $response["api_token"]=$user->api_token;
+                $response["id"]=$user->id;
 
             }else{
                 throw new Exception("Error: Introduce email y password");
