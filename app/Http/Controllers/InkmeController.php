@@ -502,6 +502,9 @@ class InkmeController extends Controller
                     ]);
                 }
             }
+            if(count($lista1) == 0) {
+                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.");
+            }
             $response["usuarios"] = $lista1;
         }catch(\Exception $e){
             $response["status"]=0;
