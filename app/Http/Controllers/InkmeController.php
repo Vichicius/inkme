@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class InkmeController extends Controller
 {
 
-    public function register(Request $req){ //Pide: api_token, name, email, password, y numtlf || Devuelve: status, msg y usuario_id
+    public function register(Request $req){ //Pide: name, email, password, y numtlf || Devuelve: status, msg y usuario_id
         $jdata = $req->getContent();
         $data = json_decode($jdata);
         $response["status"]=1;
@@ -60,7 +60,7 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function login(Request $req){ //Pide: api_token, email y password || Devuelve: "status" "msg" y "api_token" (si ha iniciado bien)
+    public function login(Request $req){ //Pide:  email y password || Devuelve: "status" "msg" y "api_token" (si ha iniciado bien)
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -96,7 +96,7 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function crearPost(Request $req){ //Pide:api_token title, description(opcional) photo style bcolor || Devuelve: "status" "msg" y "post_id"
+    public function crearPost(Request $req){ //Pide: api_token, title, description(opcional) photo style bcolor || Devuelve: "status" "msg" y "post_id"
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -135,7 +135,7 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function cargarPost(Request $req){ //Pide: post_id || Devuelve: "status" "msg" y "post"
+    public function cargarPost(Request $req){ //Pide: post_id || Devuelve: "status" "msg" y "post" MG: 
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
