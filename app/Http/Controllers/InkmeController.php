@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 //use App\Mail\OrderShipped;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class InkmeController extends Controller
 {
@@ -451,10 +452,10 @@ class InkmeController extends Controller
                 foreach ($estilos as $key => $estilo) {
                     $usuariosCoincidenConUnEstilo = [];
 
-                    if(isset($data->location) && $data->location != ""){ //si además de estilos me pasa ubicacion
-                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('styles','like','%'.$estilo.','.'%')->get(['id','name','profile_picture','location','styles']);
-                    }else{
-                        $usuariosCoincidenConUnEstilo = Usuario::where('styles','like','%'.$estilo.','.'%')->get(['id','name','profile_picture','location','styles']);
+                    if(isset($data->location) && $data->location != ""){ //busqueda estilos + ubicacion
+                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('styles','like','%'.$estilo.','.'%');
+                    }else{ //solo estilos
+                        $usuariosCoincidenConUnEstilo = Usuario::where('styles','like','%'.$estilo.','.'%');
                     }
 
                     if(count($usuariosCoincidenConUnEstilo) == 0 ) continue;
@@ -465,10 +466,10 @@ class InkmeController extends Controller
                         }
                     }
                 }
-            }else if(isset($data->location) && $data->location != ""){
-                $usuarios = Usuario::where('location',$data->location)->get(['id','name','profile_picture','location','styles']);
-            }else{
-                $usuarios = Usuario::all('id','name','profile_picture','location','styles')->shuffle();
+            }else if(isset($data->location) && $data->location != ""){ // solo ubicacion
+                $usuarios = Usuario::where('location',$data->location);
+            }else{ //ningun filtro
+                $usuarios = Usuario::all()->shuffle();
                 //randomizar el orden de usuarios para que sea cada vez uno nuevo
             }
             if(isset($data->name) && $data->name != ""){ //filtro de nombre
@@ -483,18 +484,23 @@ class InkmeController extends Controller
             if(count($usuarios) == 0) {
                 throw new Exception("No hay coincidencias.");
             }
+
+
             //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
             $lista1 = [];
             foreach ($usuarios as $key => $usuario) {
+                //filtrar que los usuarios tengan al menos 3 posts
                 $posts = Post::where('user_id', $usuario->id)->get(['id', 'user_id', 'photo']);
-                array_push($lista1, [
-                    "id"=>$usuario->id,
-                    "name"=>$usuario->name,
-                    "profile_picture"=>$usuario->profile_picture,
-                    "location"=>$usuario->location,
-                    "styles"=>$usuario->styles,
-                    "posts"=>$posts
-                ]);
+                if(count($posts) >= 3){
+                    array_push($lista1, [
+                        "id"=>$usuario->id,
+                        "name"=>$usuario->name,
+                        "profile_picture"=>$usuario->profile_picture,
+                        "location"=>$usuario->location,
+                        "styles"=>$usuario->styles,
+                        "posts"=>$posts
+                    ]);
+                }
             }
             $response["usuarios"] = $lista1;
         }catch(\Exception $e){
