@@ -490,7 +490,7 @@ class InkmeController extends Controller
             $lista1 = [];
             foreach ($usuarios as $key => $usuario) {
                 //filtrar que los usuarios tengan al menos 3 posts
-                $posts = Post::where('user_id', $usuario->id)->get(['id', 'user_id', 'photo']);
+                $posts = Post::where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
                 if(count($posts) >= 3){
                     array_push($lista1, [
                         "id"=>$usuario->id,
