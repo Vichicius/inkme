@@ -551,7 +551,7 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             if(isset($data->post_id)){
-                $post = Post::find($data->post_id)->where('active', 1);
+                $post = Post::find($data->post_id)->where('active', 1)->first();
                 if(!isset($post)) throw new Exception("Error: Post no existe");
                 if(isset($data->api_token)){//si es tatuador: añadir una view como tatuador
                     $post->viewsTatuadores += 1;
