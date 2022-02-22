@@ -51,7 +51,6 @@ class InkmeController extends Controller
                 do {
                     $user->api_token = Hash::make(now().$user->email);
                 } while (in_array($user->api_token, $allTokens)); //En bucle mientras que el apitoken esté duplicado
-                $user->views = 0;
                 $user->save();
                 $response["msg"]="Guardado con éxito";
                 $response["api_token"]=$user->api_token;
@@ -537,6 +536,67 @@ class InkmeController extends Controller
                 //devolverlos
             }else{
                 throw new Exception("Error: Introduce post_ids");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function viewPost(Request $req){ //Pide: post_id, api_token (opcional para saber que es un tatuador) || Devuelve: "status" "msg" y "[{post}]"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->post_id)){
+                $post = Post::find($data->post_id)->where('active', 1);
+                if(!isset($post)) throw new Exception("Error: Post no existe");
+                if(isset($data->api_token)){//si es tatuador: añadir una view como tatuador
+                    $post->viewsTatuadores += 1;
+                    $post->viewsTotales += 1;
+                }else{//si es cliente: añadir una view como cliente
+                    $post->viewsClientes += 1;
+                    $post->viewsTotales += 1;
+                }
+                $post->save();
+            }else{
+                throw new Exception("Error: Introduce post_id");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function viewStats(Request $req){ //Pide: api_token || Devuelve: "status" "msg", "viewsTotales", "viewsTatuadores", "viewsClientes"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->api_token)){
+                $user = $req->get('usuario');
+                $posts = Post::orderBy('viewsTotales', 'desc')->where('user_id', $user->id)->get(['id','photo','viewsTatuadores', 'viewsClientes','viewsTotales']);
+                $viewsTotales = 0;
+                $viewsClientes = 0;
+                $viewsTatuadores = 0;
+                foreach ($posts as $key => $post) {
+                    $viewsTotales += $post->viewsTotales;
+                    $viewsClientes += $post->viewsClientes;
+                    $viewsTatuadores += $post->viewsTatuadores;
+                }
+                $top3posts = $posts->take(3);
+                $response['total'] = $viewsTotales;
+                $response['clientes'] = $viewsClientes;
+                $response['tatuadores'] = $viewsTatuadores;
+                $response['top3'] = $top3posts;
+                return response()->json($response);
+
+            }else{
+                throw new Exception("Error: Introduce api_token");
             }
         }catch(\Exception $e){
             $response["status"]=0;

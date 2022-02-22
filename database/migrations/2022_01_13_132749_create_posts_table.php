@@ -21,6 +21,9 @@ class CreatePostsTable extends Migration
             $table->string('photo');
             $table->string('style')->nullable();
             $table->boolean('bcolor');
+            $table->integer('viewsTatuadores')->default(0);
+            $table->integer('viewsClientes')->default(0);
+            $table->integer('viewsTotales')->default(0);
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

@@ -23,8 +23,7 @@ class CreateUsuariosTable extends Migration
             $table->string('styles')->nullable();
             $table->string('api_token')->unique()->nullable();
             $table->string('location')->nullable();
-            $table->integer('views')->nullable(); //Dicen de quitar esto
-            $table->integer('estudio_id')->nullable();
+            #$table->integer('estudio_id')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

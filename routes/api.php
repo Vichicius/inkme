@@ -26,6 +26,7 @@ Route::middleware('login')->group(function () {
     Route::put('/editarPerfil', [InkmeController::class,'editarPerfil']);
     Route::put('/borrarPost', [InkmeController::class,'borrarPost']);
     Route::put('/borrarArticulo', [InkmeController::class,'borrarArticulo']);
+    Route::put('/viewStats', [InkmeController::class,'viewStats']);
 });
 
 
@@ -35,5 +36,6 @@ Route::put('/cargarMerchLista', [InkmeController::class,'cargarMerchLista']);
 Route::put('/cargarMerchArticulo', [InkmeController::class,'cargarMerchArticulo']);
 Route::put('/fetchFeed', [InkmeController::class,'fetchFeed']);
 Route::put('/listaDeFavs', [InkmeController::class,'listaDeFavs']);
+Route::put('/viewPost', [InkmeController::class,'viewPost']);
 
 
