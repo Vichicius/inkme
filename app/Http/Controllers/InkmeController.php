@@ -444,6 +444,7 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
+            $usuarios = [];
             //me puede pasar ubicacion y etiquetas
             if(isset($data->styles) && $data->styles != ""){
                 $estilos = explode(',',$data->styles);
@@ -453,9 +454,9 @@ class InkmeController extends Controller
                     $usuariosCoincidenConUnEstilo = [];
 
                     if(isset($data->location) && $data->location != ""){ //busqueda estilos + ubicacion
-                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('styles','like','%'.$estilo.','.'%');
+                        $usuariosCoincidenConUnEstilo = Usuario::where('location',$data->location)->where('styles','like','%'.$estilo.','.'%')->get();
                     }else{ //solo estilos
-                        $usuariosCoincidenConUnEstilo = Usuario::where('styles','like','%'.$estilo.','.'%');
+                        $usuariosCoincidenConUnEstilo = Usuario::where('styles','like','%'.$estilo.','.'%')->get();
                     }
 
                     if(count($usuariosCoincidenConUnEstilo) == 0 ) continue;
@@ -467,7 +468,7 @@ class InkmeController extends Controller
                     }
                 }
             }else if(isset($data->location) && $data->location != ""){ // solo ubicacion
-                $usuarios = Usuario::where('location',$data->location);
+                $usuarios = Usuario::where('location',$data->location)->get();
             }else{ //ningun filtro
                 $usuarios = Usuario::all()->shuffle();
                 //randomizar el orden de usuarios para que sea cada vez uno nuevo
@@ -512,6 +513,38 @@ class InkmeController extends Controller
         }
         return response()->json($response);
     }
+
+    public function listaDeFavs(Request $req){ //Pide: ids: [post_id] || Devuelve: "status" "msg" y "[{post}]"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->ids)){
+                $ids = $data->ids;
+                $posts = Post::find($ids)->where('active', 1)->toArray();
+                if(count($posts) != 0){
+                    $array1 = [];
+                    foreach ($posts as $key => $post) {
+                        array_push($array1, $post);
+                    }
+
+                    $response["posts"] = $array1;
+                }else{
+                    throw new Exception("Error: No se encuentra ningun post. Puede que haya sido borrado");
+                }
+                //comprobar que todos son válidos (que no se haya ocultado ninguno)
+                //devolverlos
+            }else{
+                throw new Exception("Error: Introduce post_ids");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
     /*
     if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
         $user->styles = $data->styles;
