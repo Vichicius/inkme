@@ -489,8 +489,11 @@ class InkmeController extends Controller
             //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
             $lista1 = [];
             foreach ($usuarios as $key => $usuario) {
+                if(isset($data->api_token) && ($usuario == Usuario::where('api_token', $data->api_token)->first())){
+                    continue;
+                }
                 //filtrar que los usuarios tengan al menos 3 posts
-                $posts = Post::where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
+                $posts = Post::orderBy('id', 'DESC')->where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
                 if(count($posts) >= 3){
                     array_push($lista1, [
                         "id"=>$usuario->id,
