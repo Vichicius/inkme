@@ -544,16 +544,16 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
-    public function viewPost(Request $req){ //Pide: post_id, api_token (opcional para saber que es un tatuador) || Devuelve: "status" "msg" y "[{post}]"
+    public function sumarViewPost(Request $req){ //Pide: post_id, api_token (opcional para saber que es un tatuador) || Devuelve: "status" "msg" y "[{post}]"
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
         $response["status"]=1;
         try{
-            if(isset($data->post_id)){
+            if(isset($data->post_id) && isset($data->api_token)){
                 $post = Post::find($data->post_id)->where('active', 1)->first();
                 if(!isset($post)) throw new Exception("Error: Post no existe");
-                if(isset($data->api_token)){//si es tatuador: añadir una view como tatuador
+                if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
                     $post->viewsTatuadores += 1;
                     $post->viewsTotales += 1;
                 }else{//si es cliente: añadir una view como cliente
@@ -562,7 +562,7 @@ class InkmeController extends Controller
                 }
                 $post->save();
             }else{
-                throw new Exception("Error: Introduce post_id");
+                throw new Exception("Error: Introduce post_id y api_token (aunque esté vacio)");
             }
         }catch(\Exception $e){
             $response["status"]=0;
@@ -605,6 +605,32 @@ class InkmeController extends Controller
         return response()->json($response);
     }
 
+    public function sumarViewPerfil(Request $req){ //Pide: user_id, api_token (opcional para saber que es un tatuador) || Devuelve: "status" "msg" y "[{post}]"
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->user_id) && isset($data->api_token)){
+                $user = Usuario::find($data->user_id)->where('active', 1)->first();
+                if(!isset($post)) throw new Exception("Error: usuario no existe");
+                if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
+                    $user->viewsTatuadores += 1;
+                    $user->viewsTotales += 1;
+                }else{//si es cliente: añadir una view como cliente
+                    $user->viewsClientes += 1;
+                    $user->viewsTotales += 1;
+                }
+                $user->save();
+            }else{
+                throw new Exception("Error: Introduce user_id y api_token (aunque esté vacio)");
+            }
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
     /*
     if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
         $user->styles = $data->styles;

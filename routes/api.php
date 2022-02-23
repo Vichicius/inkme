@@ -36,6 +36,7 @@ Route::put('/cargarMerchLista', [InkmeController::class,'cargarMerchLista']);
 Route::put('/cargarMerchArticulo', [InkmeController::class,'cargarMerchArticulo']);
 Route::put('/fetchFeed', [InkmeController::class,'fetchFeed']);
 Route::put('/listaDeFavs', [InkmeController::class,'listaDeFavs']);
-Route::put('/viewPost', [InkmeController::class,'viewPost']);
+Route::put('/sumarViewPost', [InkmeController::class,'sumarViewPost']);
+Route::put('/sumarViewPerfil', [InkmeController::class,'sumarViewPerfil']);
 
 
