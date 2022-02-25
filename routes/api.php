@@ -27,6 +27,7 @@ Route::middleware('login')->group(function () {
     Route::put('/borrarPost', [InkmeController::class,'borrarPost']);
     Route::put('/borrarArticulo', [InkmeController::class,'borrarArticulo']);
     Route::put('/viewStats', [InkmeController::class,'viewStats']);
+    Route::post('/subirImagen', [InkmeController::class,'subirImagen']);
 });
 
 

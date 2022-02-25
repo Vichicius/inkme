@@ -634,6 +634,20 @@ class InkmeController extends Controller
         }
         return response()->json($response);
     }
+
+    public function subirImagen(Request $req){ //Pide: imagen || Devuelve: "status" y "url" !!!!ES UN POST!!!!
+
+        $response["status"]=1;
+        try{
+            $filename = $req->file("imagen")->store('public/archivos');
+            $response["url"] = "http://www.desarrolladorapp.com/gestionImagenes/storage/app/".$filename;
+
+        }catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
     /*
     if(preg_match("/((blackwork|tradicional|tradicional-japones|realista|neotradi|ignorant),)+/", $data->styles)){
         $user->styles = $data->styles;
