@@ -30,6 +30,7 @@ Route::middleware('login')->group(function () {
     Route::post('/subirImagen', [InkmeController::class,'subirImagen']);
 });
 
+Route::post('/subirImagen', [InkmeController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
 
 Route::put('/cargarPost', [InkmeController::class,'cargarPost']);
 Route::put('/cargarPerfil', [InkmeController::class,'cargarPerfil']);
