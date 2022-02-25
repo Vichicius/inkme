@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\Estudio;
 use Exception;
 use DateTime;
+use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -639,6 +640,10 @@ class InkmeController extends Controller
 
         $response["status"]=1;
         try{
+            $tipo = $req->file("imagen")->getClientMimeType();
+            if(explode("/",$tipo)[0] != "image"){
+                throw new Exception("Error: Introduce una imagen");
+            }
             $filename = $req->file("imagen")->store('public/archivos');
             $response["url"] = "http://www.desarrolladorapp.com/inkme/storage/app/".$filename;
 
