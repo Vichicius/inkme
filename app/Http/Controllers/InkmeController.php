@@ -640,7 +640,7 @@ class InkmeController extends Controller
         $response["status"]=1;
         try{
             $filename = $req->file("imagen")->store('public/archivos');
-            $response["url"] = "http://www.desarrolladorapp.com/gestionImagenes/storage/app/".$filename;
+            $response["url"] = "http://www.desarrolladorapp.com/inkme/storage/app/".$filename;
 
         }catch(\Exception $e){
             $response["status"]=0;
