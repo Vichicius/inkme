@@ -493,6 +493,9 @@ class InkmeController extends Controller
                 if(isset($data->api_token) && ($usuario == Usuario::where('api_token', $data->api_token)->first())){
                     continue;
                 }
+                if($usuario->active == 0){
+                    continue;
+                }
                 //filtrar que los usuarios tengan al menos 3 posts
                 $posts = Post::orderBy('id', 'DESC')->where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
                 if(count($posts) >= 3){
