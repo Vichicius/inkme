@@ -28,64 +28,6 @@
             position: relative;
             font-family: 'roboto', sans-serif;
         }
-
-        .navbar{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background: #fff;
-            border-bottom: 1px solid #dfdfdf;
-            display: flex;
-            justify-content: center;
-            padding: 5px 0;
-        }
-
-        .nav-wrapper{
-            width: 70%;
-            max-width: 1000px;
-            height: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand-img{
-            height: 100%;
-            margin-top: 5px;
-        }
-
-        .search-box{
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 25px;
-            background: #fafafa;
-            border: 1px solid #dfdfdf;
-            border-radius: 2px;
-            color: rgba(0, 0, 0, 0.5);
-            text-align: center;
-            text-transform: capitalize;
-        }
-
-        .search-box::placeholder{
-            color: rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-items{
-            height: 22px;
-            position: relative;
-        }
-
-        .icon{
-            height: 100%;
-            cursor: pointer;
-            margin: 0 10px;
-            display: inline-block;
-        }
-
         .user-profile{
             width: 22px;
             border-radius: 50%;
@@ -102,45 +44,9 @@
 
         .wrapper{
             width: 70%;
-            max-width: 1000px;
-            display: grid;
-            grid-template-columns: 60% 40%;
-            grid-gap: 30px;
+            max-width: 700px;
+            min-width: 480px;
         }
-
-        .left-col{
-            display: flex;
-            flex-direction: column;
-        }
-
-        .status-wrapper{
-            width: 100%;
-            height: 120px;
-            background: #fff;
-            border: 1px solid #dfdfdf;
-            border-radius: 2px;
-            padding: 10px;
-            padding-right: 0;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            overflow-x: auto;
-        }
-
-        .status-wrapper::-webkit-scrollbar{
-            display: none;
-        }
-
-        .status-card{
-            flex: 0 0 auto;
-            width: 80px;
-            max-width: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-right: 15px;
-        }
-
         .profile-pic{
             width: 70px;
             height: 70px;
@@ -215,7 +121,7 @@
 
         .post-image{
             width: 100%;
-            height: 500px;
+            height: auto;
             object-fit: cover;
         }
 
@@ -224,9 +130,6 @@
             padding: 20px;
         }
 
-        .likes{
-            font-weight: bold;
-        }
 
         .description{
             margin: 10px 0;
@@ -244,57 +147,8 @@
             font-size: 12px;
         }
 
-        .comment-wrapper{
-            width: 100%;
-            height: 50px;
-            border-radius: 1px solid #dfdfdf;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
 
-        .comment-wrapper .icon{
-            height: 30px;
-        }
 
-        .comment-box{
-            width: 80%;
-            height: 100%;
-            border: none;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .comment-btn,
-        .action-btn{
-            width: 70px;
-            height: 100%;
-            background: none;
-            border: none;
-            outline: none;
-            text-transform: capitalize;
-            font-size: 16px;
-            color: rgb(0, 162, 255);
-            opacity: 0.5;
-        }
-
-        .reaction-wrapper{
-            width: 100%;
-            height: 50px;
-            display: flex;
-            margin-top: -20px;
-            align-items: center;
-        }
-
-        .reaction-wrapper .icon{
-            height: 25px;
-            margin: 0;
-            margin-right: 20px;
-        }
-
-        .reaction-wrapper .icon.save{
-            margin-left: auto;
-        }
 
 
 
@@ -305,31 +159,24 @@
 <body>
     <section class="main">
         <div class="wrapper">
-            <div class="left-col">
-                <div class="left-col">
-                    <div class="post">
-
-                        <div class="info">
-                            <div class="user">
-                                <div class="profile-pic"><img src="{{ $fotoperfil }}" alt=""></div>
-                                <p class="username">{{ $nombre }}</p>
-                            </div>
-                        </div>
-
-                        <img src="{{ $fotopost }}" class="post-image" alt="">
-
-                        <div class="post-content">
-
-                            <p class="description"><span>{{ $nombre }} </span> {{ $descripcion }}</p>
-                            <p class="post-time">{{ $fecha }}</p>
-                        </div>
-
-
+            <div class="post">
+                <div class="info">
+                    <div class="user">
+                        <div class="profile-pic"><img src="{{ $fotoperfil }}" alt=""></div>
+                        <p class="username">{{ $nombre }}</p>
                     </div>
                 </div>
 
-            </div>
-        </section>
+                <img src="{{ $fotopost }}" class="post-image" alt="">
 
-    </body>
-    </html>
+                <div class="post-content">
+                    <p class="description"><span>{{ $nombre }} </span> {{ $descripcion }}</p>
+                    <p class="post-time">{{ $fecha }}</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>
