@@ -46,6 +46,8 @@
             width: 70%;
             max-width: 700px;
             min-width: 480px;
+            max-height: 700px;
+            min-height: 480px;
         }
         .profile-pic{
             width: 70px;
@@ -79,6 +81,7 @@
             background: #fff;
             border: 1px solid #dfdfdf;
             margin-top: 40px;
+            padding: 50px;
         }
 
         .info{
