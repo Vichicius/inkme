@@ -43,12 +43,11 @@
         }
 
         .wrapper{
-            width: 70%;
+            width: 100%;
             max-width: 700px;
-            min-width: 480px;
+            min-width: 390px;
             max-height: 700px;
-            min-height: 480px;
-            padding: 20px;
+            min-height: 390px;
         }
         .profile-pic{
             width: 70px;
@@ -149,11 +148,6 @@
             color: rgba(0, 0, 0, 0.5);
             font-size: 12px;
         }
-
-
-
-
-
 
 
     </style>
