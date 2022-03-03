@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InkmeController;
+use App\Http\Controllers\MailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,3 +43,4 @@ Route::put('/sumarViewPost', [InkmeController::class,'sumarViewPost']);
 Route::put('/sumarViewPerfil', [InkmeController::class,'sumarViewPerfil']);
 
 
+Route::put('/enviarFormulario', [MailController::class,'enviarFormulario']);
