@@ -2,8 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InkmeController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UsuarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,30 +18,30 @@ use App\Http\Controllers\MailController;
 */
 
 
-Route::put('/register', [InkmeController::class,'register']);
-Route::put('/login', [InkmeController::class,'login']);
+Route::put('/register', [UsuarioController::class,'register']);
+Route::put('/login', [UsuarioController::class,'login']);
 
 
 Route::middleware('login')->group(function () {
-    Route::put('/crearPost', [InkmeController::class,'crearPost']);
-    Route::put('/crearMerch', [InkmeController::class,'crearMerch']);
-    Route::put('/editarPerfil', [InkmeController::class,'editarPerfil']);
-    Route::put('/borrarPost', [InkmeController::class,'borrarPost']);
-    Route::put('/borrarArticulo', [InkmeController::class,'borrarArticulo']);
-    Route::put('/viewStats', [InkmeController::class,'viewStats']);
-    Route::post('/subirImagen', [InkmeController::class,'subirImagen']);
+    Route::put('/crearPost', [PostController::class,'crearPost']);
+    Route::put('/crearMerch', [PostController::class,'crearMerch']);
+    Route::put('/editarPerfil', [UsuarioController::class,'editarPerfil']);
+    Route::put('/borrarPost', [PostController::class,'borrarPost']);
+    Route::put('/borrarArticulo', [PostController::class,'borrarArticulo']);
+    Route::put('/viewStats', [UsuarioController::class,'viewStats']);
+    Route::post('/subirImagen', [PostController::class,'subirImagen']);
 });
 
-Route::post('/subirImagen', [InkmeController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
+Route::post('/subirImagen', [PostController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
 
-Route::put('/cargarPost', [InkmeController::class,'cargarPost']);
-Route::put('/cargarPerfil', [InkmeController::class,'cargarPerfil']);
-Route::put('/cargarMerchLista', [InkmeController::class,'cargarMerchLista']);
-Route::put('/cargarMerchArticulo', [InkmeController::class,'cargarMerchArticulo']);
-Route::put('/fetchFeed', [InkmeController::class,'fetchFeed']);
-Route::put('/listaDeFavs', [InkmeController::class,'listaDeFavs']);
-Route::put('/sumarViewPost', [InkmeController::class,'sumarViewPost']);
-Route::put('/sumarViewPerfil', [InkmeController::class,'sumarViewPerfil']);
+Route::put('/cargarPost', [PostController::class,'cargarPost']);
+Route::put('/cargarPerfil', [UsuarioController::class,'cargarPerfil']);
+Route::put('/cargarMerchLista', [PostController::class,'cargarMerchLista']);
+Route::put('/cargarMerchArticulo', [PostController::class,'cargarMerchArticulo']);
+Route::put('/fetchFeed', [PostController::class,'fetchFeed']);
+Route::put('/listaDeFavs', [PostController::class,'listaDeFavs']);
+Route::put('/sumarViewPost', [PostController::class,'sumarViewPost']);
+Route::put('/sumarViewPerfil', [UsuarioController::class,'sumarViewPerfil']);
 
 
 Route::put('/enviarFormulario', [MailController::class,'enviarFormulario']);
