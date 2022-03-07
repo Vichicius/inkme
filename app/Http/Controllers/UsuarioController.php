@@ -14,7 +14,7 @@ class UsuarioController extends Controller
     public function register(Request $req){ //Pide: name, email, password, y numtlf || Devuelve: status, msg y usuario_id
         $jdata = $req->getContent();
         $data = json_decode($jdata);
-        $response["status"]=1;
+        $response["status"]=200;
 
 
         try{
@@ -23,20 +23,20 @@ class UsuarioController extends Controller
                 $user->name = $data->name;
                 //validar email
                 if(!preg_match("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$^", $data->email)) {
-                    throw new Exception("Error: Email no válido");
+                    throw new Exception("Error: Email no válido",401);
                 }
                 $user->email = $data->email;
                 //validar contraseña
                 if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}/", $data->password)){
                     $user->password = Hash::make($data->password);
                 }else{
-                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud");
+                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud",401);
                 }
                 //validar tlf
                 if($data->numtlf >= 100000000 && $data->numtlf <= 999999999){
                     $user->numtlf = $data->numtlf;
                 }else{
-                    throw new Exception("Número de teléfono debe ser de 9 dígitos");
+                    throw new Exception("Número de teléfono debe ser de 9 dígitos",401);
                 }
                 //crear token y guardarlo
                 $allTokens = Usuario::pluck('api_token')->toArray();
@@ -48,11 +48,11 @@ class UsuarioController extends Controller
                 $response["api_token"]=$user->api_token;
                 $response["user"]=$user;
             }else{
-                throw new Exception("Introduce name, email, password y numtlf");
+                throw new Exception("Introduce name, email, password y numtlf",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
-            $response["msg"]="Error al intentar guardar el usuario: ".$e->getMessage();
+            $response["status"]=$e->getCode();
+            $response["msg"]=$e->getMessage();
         }
 
         return response()->json($response);
@@ -62,17 +62,17 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=1;
+        $response["status"]=200;
         try{
             if(isset($data->email) && isset($data->password)){
                 //comprobar email
                 $user = Usuario::where('email', $data->email)->first();
                 if ($user == null){
-                    throw new Exception("Error: El email o la contraseña no es correcto",300);
+                    throw new Exception("Error: El email o la contraseña no es correcto",401);
                 }
                 //comprobar que la contraseña coincide con la asociada al email
                 if(!Hash::check($data->password, $user->password)){
-                    throw new Exception("Error: El email o la contraseña no es correcto");
+                    throw new Exception("Error: El email o la contraseña no es correcto",401);
                 }
                 //crear token y guardarlo
                 $allTokens = Usuario::pluck('api_token')->toArray();
@@ -86,7 +86,7 @@ class UsuarioController extends Controller
                 $response["user"]=$user;
 
             }else{
-                throw new Exception("Error: Introduce email y password");
+                throw new Exception("Error: Introduce email y password",400);
             }
         }catch(\Exception $e){
             $response["status"]=$e->getCode();
@@ -99,12 +99,12 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=1;
+        $response["status"]=200;
         try{
             if(isset($data->usuario_id)){
                 $usuario = Usuario::find($data->usuario_id);
                 if(!isset($usuario)|| $usuario->active == false){
-                    throw new Exception("Error: No se encuentra el usuario.");
+                    throw new Exception("Error: No se encuentra el usuario.", 500);
                 }
                 $response["msg"]="usuario encontrado.";
 
@@ -119,10 +119,10 @@ class UsuarioController extends Controller
 
                 $response["usuario"]["posts"] = $ImagenesURLeID;
             }else{
-                throw new Exception("Error: Introduce usuario_id");
+                throw new Exception("Error: Introduce usuario_id",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -132,7 +132,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=1;
+        $response["status"]=200;
         try{
             $validator = Validator::make(json_decode($jdata, true), [
                 'name' => 'string|max:40',
@@ -145,7 +145,7 @@ class UsuarioController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
+                throw new Exception($validator->errors()->first(),401);
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
@@ -158,7 +158,7 @@ class UsuarioController extends Controller
                 if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}/", $data->password)){
                     $user->password = Hash::make($data->password);
                 }else{
-                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud");
+                    throw new Exception("Contraseña insegura. Mínimo: 1 Mayúscula, 1 minúscula, 1 número y 6 de longitud",401);
                 }
             }
             if(isset($data->numtlf)) $user->numtlf = $data->numtlf;
@@ -175,7 +175,7 @@ class UsuarioController extends Controller
                 foreach ($inputEstilos as $key => $value) {
                     if(!in_array($value, $estilosExistentes)){
                         $response["estilos"] = $estilosExistentes;
-                        throw new Exception("El estilo $value no existe. Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ");
+                        throw new Exception("El estilo $value no existe. Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ",401);
                     }
                 }
                 $user->styles = $data->styles;
@@ -186,7 +186,7 @@ class UsuarioController extends Controller
             $response["user_id"]=$user->id;
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -196,7 +196,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=1;
+        $response["status"]=200;
         try{
             if(isset($data->api_token)){
                 $user = $req->get('usuario');
@@ -217,10 +217,10 @@ class UsuarioController extends Controller
                 return response()->json($response);
 
             }else{
-                throw new Exception("Error: Introduce api_token");
+                throw new Exception("Error: Introduce api_token",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -230,11 +230,11 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=1;
+        $response["status"]=200;
         try{
             if(isset($data->user_id) && isset($data->api_token)){
                 $user = Usuario::find($data->user_id)->where('active', 1)->first();
-                if(!isset($post)) throw new Exception("Error: usuario no existe");
+                if(!isset($post)) throw new Exception("Error: usuario no existe",500);
                 if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
                     $user->viewsTatuadores += 1;
                     $user->viewsTotales += 1;
@@ -244,10 +244,10 @@ class UsuarioController extends Controller
                 }
                 $user->save();
             }else{
-                throw new Exception("Error: Introduce user_id y api_token (aunque esté vacio)");
+                throw new Exception("Error: Introduce user_id y api_token (aunque esté vacio)",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
