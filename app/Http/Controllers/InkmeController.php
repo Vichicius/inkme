@@ -55,7 +55,7 @@ class InkmeController extends Controller
                 $user->save();
                 $response["msg"]="Guardado con éxito";
                 $response["api_token"]=$user->api_token;
-                $response["id"]=$user->id;
+                $response["user"]=$user;
             }else{
                 throw new Exception("Introduce name, email, password y numtlf");
             }
@@ -92,7 +92,7 @@ class InkmeController extends Controller
                 //responder con token
                 $response["msg"]="Sesion iniciada";
                 $response["api_token"]=$user->api_token;
-                $response["id"]=$user->id;
+                $response["user"]=$user;
 
             }else{
                 throw new Exception("Error: Introduce email y password");
