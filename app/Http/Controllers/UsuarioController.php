@@ -152,7 +152,18 @@ class UsuarioController extends Controller
             $user = $req->get('usuario');
 
             if(isset($data->name)) $user->name = $data->name;
-            if(isset($data->email)) $user->email = $data->email;
+            if(isset($data->email)){
+                $useremail = Usuario::where('email', $data->email)->first();
+                if(isset($useremail)){
+                    if($useremail->id == $user->id){
+                        print("Se pone el mismo email");
+                    }else{
+                        throw new Exception("Ese email ya está en uso",401);
+                    }
+                }else{
+                    $user->email = $data->email;
+                }
+            }
             if(isset($data->password)){
                 //validar contraseña
                 if(preg_match("/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}/", $data->password)){
