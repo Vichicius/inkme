@@ -14,7 +14,7 @@ class UsuarioController extends Controller
     public function register(Request $req){ //Pide: name, email, password, y numtlf || Devuelve: status, msg y usuario_id
         $jdata = $req->getContent();
         $data = json_decode($jdata);
-        $response["status"]=200;
+        $response["status"]=1;
 
 
         try{
@@ -62,7 +62,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=200;
+        $response["status"]=1;
         try{
             if(isset($data->email) && isset($data->password)){
                 //comprobar email
@@ -99,7 +99,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=200;
+        $response["status"]=1;
         try{
             if(isset($data->usuario_id)){
                 $usuario = Usuario::find($data->usuario_id);
@@ -132,7 +132,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=200;
+        $response["status"]=1;
         try{
             $validator = Validator::make(json_decode($jdata, true), [
                 'name' => 'string|max:40',
@@ -196,7 +196,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=200;
+        $response["status"]=1;
         try{
             if(isset($data->api_token)){
                 $user = $req->get('usuario');
@@ -230,7 +230,7 @@ class UsuarioController extends Controller
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
-        $response["status"]=200;
+        $response["status"]=1;
         try{
             if(isset($data->user_id) && isset($data->api_token)){
                 $user = Usuario::find($data->user_id)->where('active', 1)->first();
