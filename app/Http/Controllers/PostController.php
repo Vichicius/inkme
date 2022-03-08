@@ -26,7 +26,7 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
+                throw new Exception($validator->errors()->first(),401);
             }
 
             $post = new Post();
@@ -44,7 +44,7 @@ class PostController extends Controller
             $response["post_id"]=$post->id;
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -59,17 +59,17 @@ class PostController extends Controller
             if(isset($data->post_id)){
                 $post = Post::find($data->post_id);
                 if(!isset($post) || $post->active == false){
-                    throw new Exception("Error: No se encuentra el post.");
+                    throw new Exception("Error: No se encuentra el post.",500);
                 }
                 $user = Usuario::find($post->user_id);
                 $response["msg"]="Post encontrado.";
                 $response["post"] = $post;
                 $response["usuario"] = $user;
             }else{
-                throw new Exception("Error: Introduce post_id");
+                throw new Exception("Error: Introduce post_id",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -89,7 +89,7 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
+                throw new Exception($validator->errors()->first(),401);
             }
 
             $articulo = new Articulo;
@@ -106,7 +106,7 @@ class PostController extends Controller
             $response["articulo_id"]=$articulo->id;
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -122,18 +122,18 @@ class PostController extends Controller
                 //compruebo que existe el usuario
                 $usuario = Usuario::find($data->usuario_id);
                 if(!isset($usuario)){
-                    throw new Exception("Error: No se encuentra el usuario.");
+                    throw new Exception("Error: No se encuentra el usuario.",500);
                 }
                 $listaArticulos = Articulo::where('user_id', $data->usuario_id)->where('active',1)->get();
                 if(count($listaArticulos) == 0){
-                    throw new Exception("No tiene ningún articulo en venta.");
+                    throw new Exception("No tiene ningún articulo en venta.",500);
                 }
                 $response["articulos"] = $listaArticulos;
             }else{
-                throw new Exception("Error: Introduce usuario_id");
+                throw new Exception("Error: Introduce usuario_id",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -149,7 +149,7 @@ class PostController extends Controller
                 //compruebo que existe el articulo
                 $articulo = Articulo::find($data->articulo_id);
                 if(!isset($articulo)|| $articulo->active == false){
-                    throw new Exception("Error: No se encuentra el articulo.");
+                    throw new Exception("Error: No se encuentra el articulo.",500);
                 }
                 $response["articulo"] = $articulo;
                 // $response = [
@@ -161,10 +161,10 @@ class PostController extends Controller
                 //     ]
                 // ];
             }else{
-                throw new Exception("Error: Introduce articulo_id");
+                throw new Exception("Error: Introduce articulo_id",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -181,7 +181,7 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
+                throw new Exception($validator->errors()->first(),401);
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
@@ -189,7 +189,7 @@ class PostController extends Controller
             $post = Post::find($data->post_id);
 
             if($post->user_id != $user->id){
-                throw new Exception("Error: Este post no corresponde a este usuario (usuario: $user->id, post: $post->id");
+                throw new Exception("Error: Este post no corresponde a este usuario (usuario: $user->id, post: $post->id",401);
             }
 
             $post->active = false;
@@ -199,7 +199,7 @@ class PostController extends Controller
             $response["msg"]="Post borrado";
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -216,7 +216,7 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors()->first());
+                throw new Exception($validator->errors()->first(),401);
             }
 
             //coger el usuario que ha sido guardado en el middleware de login
@@ -224,7 +224,7 @@ class PostController extends Controller
             $articulo = Articulo::find($data->articulo_id);
 
             if($articulo->user_id != $user->id){
-                throw new Exception("Error: Este articulo no corresponde a este usuario (usuario: $user->id, post: $articulo->id");
+                throw new Exception("Error: Este articulo no corresponde a este usuario (usuario: $user->id, post: $articulo->id",401);
             }
 
             $articulo->active = false;
@@ -234,7 +234,7 @@ class PostController extends Controller
             $response["msg"]="Articulo borrado";
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -285,7 +285,7 @@ class PostController extends Controller
                 }
             }
             if(count($usuarios) == 0) {
-                throw new Exception("No hay coincidencias.");
+                throw new Exception("No hay coincidencias.",500);
             }
 
 
@@ -312,11 +312,11 @@ class PostController extends Controller
                 }
             }
             if(count($lista1) == 0) {
-                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.");
+                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",500);
             }
             $response["usuarios"] = $lista1;
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -339,15 +339,15 @@ class PostController extends Controller
 
                     $response["posts"] = $array1;
                 }else{
-                    throw new Exception("Error: No se encuentra ningun post. Puede que haya sido borrado");
+                    throw new Exception("Error: No se encuentra ningun post. Puede que haya sido borrado",500);
                 }
                 //comprobar que todos son válidos (que no se haya ocultado ninguno)
                 //devolverlos
             }else{
-                throw new Exception("Error: Introduce post_ids");
+                throw new Exception("Error: Introduce post_ids",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -361,7 +361,7 @@ class PostController extends Controller
         try{
             if(isset($data->post_id) && isset($data->api_token)){
                 $post = Post::find($data->post_id)->where('active', 1)->first();
-                if(!isset($post)) throw new Exception("Error: Post no existe");
+                if(!isset($post)) throw new Exception("Error: Post no existe",500);
                 if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
                     $post->viewsTatuadores += 1;
                     $post->viewsTotales += 1;
@@ -371,10 +371,10 @@ class PostController extends Controller
                 }
                 $post->save();
             }else{
-                throw new Exception("Error: Introduce post_id y api_token (aunque esté vacio)");
+                throw new Exception("Error: Introduce post_id y api_token (aunque esté vacio)",400);
             }
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
@@ -386,13 +386,13 @@ class PostController extends Controller
         try{
             $tipo = $req->file("imagen")->getClientMimeType();
             if(explode("/",$tipo)[0] != "image"){
-                throw new Exception("Error: Introduce una imagen");
+                throw new Exception("Error: Introduce una imagen",400);
             }
             $filename = $req->file("imagen")->store('public/archivos');
             $response["url"] = "http://www.desarrolladorapp.com/inkme/storage/app/".$filename;
 
         }catch(\Exception $e){
-            $response["status"]=0;
+            $response["status"]=$e->getCode();
             $response["msg"]=$e->getMessage();
         }
         return response()->json($response);
