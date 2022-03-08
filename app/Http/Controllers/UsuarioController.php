@@ -136,7 +136,7 @@ class UsuarioController extends Controller
         try{
             $validator = Validator::make(json_decode($jdata, true), [
                 'name' => 'string|max:40',
-                'email' => 'string|max:255|email:rfc,dns|unique:usuarios',
+                'email' => 'string|max:255|email:rfc,dns',
                 'password' => 'string',
                 'numtlf' => 'integer|max:999999999',
                 'profile_picture' => 'string',
