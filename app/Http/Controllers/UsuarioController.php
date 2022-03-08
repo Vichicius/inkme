@@ -155,9 +155,7 @@ class UsuarioController extends Controller
             if(isset($data->email)){
                 $useremail = Usuario::where('email', $data->email)->first();
                 if(isset($useremail)){
-                    if($useremail->id == $user->id){
-                        print("Se pone el mismo email");
-                    }else{
+                    if($useremail->id != $user->id){
                         throw new Exception("Ese email ya está en uso",401);
                     }
                 }else{
