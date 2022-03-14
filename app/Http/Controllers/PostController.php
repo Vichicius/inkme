@@ -330,7 +330,12 @@ class PostController extends Controller
         try{
             if(isset($data->ids)){
                 $ids = $data->ids;
-                $posts = Post::find($ids)->where('active', 1)->toArray();
+                $posts = [];
+                // $posts = Post::find($ids)->where('active', 1)->toArray();
+                foreach ($ids as $key => $id) {
+                    $post = Post::where('id', $id)->where('active', 1)->first();
+                    array_push($posts, $post);
+                }
                 if(count($posts) != 0){
                     $array1 = [];
                     foreach ($posts as $key => $post) {
