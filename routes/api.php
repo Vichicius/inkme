@@ -36,7 +36,7 @@ Route::post('/subirImagen', [PostController::class,'subirImagen']);//mirar si se
 
 Route::put('/cargarPost', [PostController::class,'cargarPost']);
 Route::put('/cargarPerfil', [UsuarioController::class,'cargarPerfil']);
-// Route::put('/cargarPostPorEstilo', [PostController::class,'cargarPostPorEstilo']);
+Route::put('/cargarPostPorEstilo', [PostController::class,'cargarPostPorEstilo']);
 Route::put('/cargarMerchLista', [PostController::class,'cargarMerchLista']);
 Route::put('/cargarMerchArticulo', [PostController::class,'cargarMerchArticulo']);
 Route::put('/fetchFeed', [PostController::class,'fetchFeed']);

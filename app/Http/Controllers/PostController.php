@@ -249,8 +249,12 @@ class PostController extends Controller
             if(isset($data->name) && $data->name != ""){
                 $busquedas = $data->name;
                 $busqueda = explode(' ',$busquedas);
+                $usuarios = [];
                 foreach ($busqueda as $key => $value) {
-                    $usuarios = Usuario::where('name', $value)->orwhere('styles','like','%'.$value.','.'%')->orwhere('location', $value)->get();
+                    $resultadoPorValor = Usuario::where('name', 'like','%'.$value.'%')->orwhere('styles','like','%'.$value.','.'%')->orwhere('location', 'like','%'.$value.'%')->get();
+                    foreach ($resultadoPorValor as $key => $resultado) {
+                        array_push($usuarios, $resultado);
+                    }
                 }
             }else{
                 //buscar todo
@@ -383,17 +387,25 @@ class PostController extends Controller
         return response()->json($response);
     }
 
-    // public function cargarPostPorEstilo(Request $req){ //Pide: nada || Devuelve: Un usuario con 3 posts suyos (usuario_id, usuario_photo, usuario_name, )
-    //     $jdata = $req->getContent();
-    //     $data = json_decode($jdata);
+    public function cargarPostPorEstilo(Request $req){ //Pide: nada || Devuelve: Un usuario con 3 posts suyos (usuario_id, usuario_photo, usuario_name, )
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
 
-    //     $response["status"]=1;
-    //     try{
-
-    //     }catch(\Exception $e){
-    //         $response["status"]=$e->getCode();
-    //         $response["msg"]=$e->getMessage();
-    //     }
-    //     return response()->json($response);
-    // }
+        $response["status"]=1;
+        try{
+            if(isset($data->style)){
+                $posts = Post::where('style', $data->style)->get()->shuffle();
+                if(!isset($posts) || count($posts) == 0){
+                    throw new Exception("Error: No se encuentran posts.",500);
+                }
+                $response["post"] = $posts;
+            }else{
+                throw new Exception("Error: Introduce style",400);
+            }
+        }catch(\Exception $e){
+            $response["status"]=$e->getCode();
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
