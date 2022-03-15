@@ -253,7 +253,10 @@ class PostController extends Controller
                 foreach ($busqueda as $key => $value) {
                     $resultadoPorValor = Usuario::where('name', 'like','%'.$value.'%')->orwhere('styles','like','%'.$value.','.'%')->orwhere('location', 'like','%'.$value.'%')->get();
                     foreach ($resultadoPorValor as $key => $resultado) {
-                        array_push($usuarios, $resultado);
+                        if(!in_array($resultado, $usuarios)){
+                            array_push($usuarios, $resultado);
+                        }
+
                     }
                 }
             }else{
