@@ -329,9 +329,15 @@ class PostController extends Controller
         $response["status"]=1;
         try{
             if(isset($data->ids)){
-                $ids = $data->ids;
+                $idsRepes = $data->ids;
+                $ids = [];
                 $posts = [];
-                // $posts = Post::find($ids)->where('active', 1)->toArray();
+                // quitar duplicados del array de ids (ids)
+                foreach ($idsRepes as $key => $id) {
+                    if(!in_array($id, $ids)){
+                        array_push($ids, $id);
+                    }
+                }
                 foreach ($ids as $key => $id) {
                     $post = Post::where('id', $id)->where('active', 1)->first();
                     array_push($posts, $post);
