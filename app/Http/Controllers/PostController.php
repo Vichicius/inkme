@@ -408,4 +408,89 @@ class PostController extends Controller
         }
         return response()->json($response);
     }
+
+    public function prueba(Request $req){ //Pide: nada || Devuelve: Un usuario con 3 posts suyos (usuario_id, usuario_photo, usuario_name, )
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $response["status"]=1;
+        try{
+            if(isset($data->name) && $data->name != ""){
+                $busquedas = $data->name;
+                $busqueda = explode(',',$busquedas);
+                return $busqueda;
+                foreach ($busqueda as $key => $value) {
+                    # code...
+                }
+            }else{
+                //buscar todo
+                $usuarios = Usuario::all()->shuffle();
+            }
+
+
+
+            if(count($usuarios) == 0) {
+                throw new Exception("No hay coincidencias.",500);
+            }
+
+            //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
+            $lista1 = [];
+            foreach ($usuarios as $key => $usuario) {
+                if(isset($data->api_token) && ($usuario == Usuario::where('api_token', $data->api_token)->first())){
+                    continue;
+                }
+                if($usuario->active == 0){
+                    continue;
+                }
+                //filtrar que los usuarios tengan al menos 3 posts
+                $posts = Post::orderBy('id', 'DESC')->where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
+                if(count($posts) >= 3){
+                    array_push($lista1, [
+                        "id"=>$usuario->id,
+                        "name"=>$usuario->name,
+                        "profile_picture"=>$usuario->profile_picture,
+                        "location"=>$usuario->location,
+                        "styles"=>$usuario->styles,
+                        "posts"=>$posts
+                    ]);
+                }
+            }
+            if(count($lista1) == 0) {
+                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",500);
+            }
+            $response["usuarios"] = $lista1;
+        }catch(\Exception $e){
+            $response["status"]=$e->getCode();
+            $response["msg"]=$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
+
+// //filtrar que los usuarios tengan al menos 3 posts
+// $posts = Post::orderBy('id', 'DESC')->where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
+// if(count($posts) >= 3){
+//     array_push($lista1, [
+//         "id"=>$usuario->id,
+//         "name"=>$usuario->name,
+//         "profile_picture"=>$usuario->profile_picture,
+//         "location"=>$usuario->location,
+//         "styles"=>$usuario->styles,
+//         "posts"=>$posts
+//     ]);
+// }
+
+// //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
+// $lista1 = [];
+// foreach ($usuarios as $key => $usuario) {
+//     if(isset($data->api_token) && ($usuario == Usuario::where('api_token', $data->api_token)->first())){
+//         continue;
+//     }
+//     if($usuario->active == 0){
+//         continue;
+//     }
+
+// }
+// if(count($lista1) == 0) {
+//     throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",500);
+// }

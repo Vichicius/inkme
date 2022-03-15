@@ -45,3 +45,7 @@ Route::put('/sumarViewPerfil', [UsuarioController::class,'sumarViewPerfil']);
 
 
 Route::put('/enviarFormulario', [MailController::class,'enviarFormulario']);
+
+
+
+Route::put('/prueba', [PostController::class,'prueba']);
