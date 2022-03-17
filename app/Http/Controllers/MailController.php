@@ -184,4 +184,36 @@ class MailController extends Controller
         }
         return response()->json($response);
     }
+
+    public function aceptarCita(Request $req){//Pide: api_token, cita_id
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $validator = Validator::make(json_decode($jdata, true), [
+            'cita_id' => 'required|exists:citas,id',
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        try {
+            $response["status"] = 1;
+            $user = $req->get('usuario');
+
+            $cita = Cita::where('id', $data->cita_id)->where('user_id', $user->id)->first();
+            if(!isset($cita)){
+                throw new Exception('Error: no existe esa cita');
+            }
+
+            $cita->state = 'active';
+            $cita->save();
+
+            $response["msg"] = "Desactivada con éxito";
+        } catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]='MailController '.$e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
