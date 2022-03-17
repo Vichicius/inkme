@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cita;
 use App\Models\Post;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
@@ -30,7 +31,7 @@ class WebController extends Controller
         //fotoperfil, nombre, fotopost, descripcion,fecha
     }
     function activarCita(Request $request,string $id){
-        $cita = Post::where('hash_identifier',$id)->first();
+        $cita = Cita::where('hash_identifier',$id)->first();
         $cita->state = 'active';
         $cita->save();
 
