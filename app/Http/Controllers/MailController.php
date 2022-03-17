@@ -40,7 +40,7 @@ class MailController extends Controller
             }
             $cita = $this->crearCita($req);
             Mail::to($user->email)->send(new Encargo (
-                $data->nombre,$data->comentario,$data->telefono, $cita->hash_identifier
+                $data->nombre,$data->comentario,$data->telefono, $cita->hash_identifier, $data->date
             ));
             $response["msg"] = "Enviado con éxito";
         } catch(\Exception $e){
