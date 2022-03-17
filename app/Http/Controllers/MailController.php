@@ -38,7 +38,7 @@ class MailController extends Controller
             if(!isset($user)){
                 throw new Exception("No se encuentra el usuario");
             }
-            $cita = $this->crearCita($data);
+            $cita = $this->crearCita($req);
             Mail::to($user->email)->send(new Encargo (
                 $data->nombre,$data->comentario,$data->telefono, $cita->hash_identifier
             ));
