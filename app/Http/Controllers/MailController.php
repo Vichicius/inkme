@@ -89,13 +89,21 @@ class MailController extends Controller
             if(count($citasPending) == 0){
                 throw new Exception("No tienes citas pendientes");
             }
-
+            $arrayCitasFinal = [];
             //COMPARAR FECHAS Y DESACTIVAR LAS QUE SON DE AYER O MAS ANTIGUAS
-            // foreach ($citasPending as $key => $cita) {
-            //     if()
-            // }
+            foreach ($citasPending as $key => $cita) {
+                if($cita->date < date('Y-m-d')){ //si es anterior a hoy
+                    $cita->state = 'denied';
+                    $cita->save();
+                }else{//si es hoy o en un futuro:
+                    array_push($arrayCitasFinal, $cita);
+                }
+            }
+            if(count($arrayCitasFinal) == 0){
+                throw new Exception("No tienes citas pendientes");
+            }
 
-            $response["citas"] = $citasPending;
+            $response["citas"] = $arrayCitasFinal;
 
 
         } catch(\Exception $e){
@@ -121,12 +129,21 @@ class MailController extends Controller
                 throw new Exception("No tienes citas activas");
             }
 
+            $arrayCitasFinal = [];
             //COMPARAR FECHAS Y DESACTIVAR LAS QUE SON DE AYER O MAS ANTIGUAS
-            // foreach ($citasActive as $key => $cita) {
-            //     if()
-            // }
+            foreach ($citasActive as $key => $cita) {
+                if($cita->date < date('Y-m-d')){ //si es anterior a hoy
+                    $cita->state = 'denied';
+                    $cita->save();
+                }else{//si es hoy o en un futuro:
+                    array_push($arrayCitasFinal, $cita);
+                }
+            }
+            if(count($arrayCitasFinal) == 0){
+                throw new Exception("No tienes citas activas");
+            }
 
-            $response["citas"] = $citasActive;
+            $response["citas"] = $arrayCitasFinal;
 
 
         } catch(\Exception $e){
