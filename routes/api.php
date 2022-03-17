@@ -32,6 +32,7 @@ Route::middleware('login')->group(function () {
     Route::put('/cargarCitasPendientes', [MailController::class,'cargarCitasPendientes']);
     Route::put('/cargarCitasActivas', [MailController::class,'cargarCitasActivas']);
     Route::put('/desactivarCita', [MailController::class,'desactivarCita']);
+    Route::put('/aceptarCita', [MailController::class,'aceptarCita']);
 
     //Route::post('/subirImagen', [PostController::class,'subirImagen']);
 });
