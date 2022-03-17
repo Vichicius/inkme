@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class MailController extends Controller
 {
     //
-    public function enviarFormulario(Request $req){//Pide: usuario_id, nombre, comentario, telefono
+    public function enviarFormulario(Request $req){//Pide: usuario_id, nombre, comentario, telefono, date
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -39,6 +39,9 @@ class MailController extends Controller
                 throw new Exception("No se encuentra el usuario");
             }
             $cita = $this->crearCita($req);
+            if(!isset($cita->hash_identifier)){
+                throw new Exception("Error al crear la cita, el formato de la fecha es YYYY-MM-DD");
+            }
             Mail::to($user->email)->send(new Encargo (
                 $data->nombre,$data->comentario,$data->telefono, $cita->hash_identifier, $data->date
             ));
@@ -68,5 +71,100 @@ class MailController extends Controller
             return response()->json($response);
         }
         return $cita;
+    }
+
+    public function cargarCitasPendientes(Request $req){//Pide: api_token
+
+        //coger usuario del req
+        //buscar todas las citas con "pending"
+        //mirar que ninguna se pasa de fecha  (cambiar a denied)
+        //devolver las pending
+
+        try {
+            $response["status"] = 1;
+
+            $user = $req->get('usuario');
+            $citasPending = Cita::where('user_id', $user->id)->where('state', 'pending')->get();
+
+            if(count($citasPending) == 0){
+                throw new Exception("No tienes citas pendientes");
+            }
+
+            //COMPARAR FECHAS Y DESACTIVAR LAS QUE SON DE AYER O MAS ANTIGUAS
+            // foreach ($citasPending as $key => $cita) {
+            //     if()
+            // }
+
+            $response["citas"] = $citasPending;
+
+
+        } catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]='MailController '.$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function cargarCitasActivas(Request $req){//Pide: api_token
+        //coger usuario del req
+        //buscar todas las citas con "active"
+        //mirar que ninguna se pasa de fecha  (cambiar a denied)
+        //devolver las active
+
+        try {
+            $response["status"] = 1;
+
+            $user = $req->get('usuario');
+            $citasActive = Cita::where('user_id', $user->id)->where('state', 'active')->get();
+
+            if(count($citasActive) == 0){
+                throw new Exception("No tienes citas activas");
+            }
+
+            //COMPARAR FECHAS Y DESACTIVAR LAS QUE SON DE AYER O MAS ANTIGUAS
+            // foreach ($citasActive as $key => $cita) {
+            //     if()
+            // }
+
+            $response["citas"] = $citasActive;
+
+
+        } catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]='MailController '.$e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    public function desactivarCita(Request $req){//Pide: api_token, cita_id
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
+
+        $validator = Validator::make(json_decode($jdata, true), [
+            'cita_id' => 'required|exists:citas,id',
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first());
+        }
+
+        try {
+            $response["status"] = 1;
+            $user = $req->get('usuario');
+
+            $cita = Cita::where('id', $data->cita_id)->where('user_id', $user->id)->first();
+            if(!isset($cita)){
+                throw new Exception('Error: no existe esa cita');
+            }
+
+            $cita->state = 'denied';
+            $cita->save();
+
+            $response["msg"] = "Desactivada con éxito";
+        } catch(\Exception $e){
+            $response["status"]=0;
+            $response["msg"]='MailController '.$e->getMessage();
+        }
+        return response()->json($response);
     }
 }

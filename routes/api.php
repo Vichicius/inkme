@@ -29,7 +29,11 @@ Route::middleware('login')->group(function () {
     Route::put('/borrarPost', [PostController::class,'borrarPost']);
     Route::put('/borrarArticulo', [PostController::class,'borrarArticulo']);
     Route::put('/viewStats', [UsuarioController::class,'viewStats']);
-    Route::post('/subirImagen', [PostController::class,'subirImagen']);
+    Route::put('/cargarCitasPendientes', [MailController::class,'cargarCitasPendientes']);
+    Route::put('/cargarCitasActivas', [MailController::class,'cargarCitasActivas']);
+    Route::put('/desactivarCita', [MailController::class,'desactivarCita']);
+
+    //Route::post('/subirImagen', [PostController::class,'subirImagen']);
 });
 
 Route::post('/subirImagen', [PostController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
