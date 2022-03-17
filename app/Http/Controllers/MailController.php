@@ -50,7 +50,9 @@ class MailController extends Controller
         return response()->json($response);
     }
 
-    private function crearCita(mixed $data){
+    private function crearCita(Request $req){
+        $jdata = $req->getContent();
+        $data = json_decode($jdata);
         try{
             $cita = Cita::create([
                 'user_id' => $data->usuario_id,
