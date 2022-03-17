@@ -7,7 +7,7 @@ use App\Models\Usuario;
 use App\Models\Cita;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -58,7 +58,7 @@ class MailController extends Controller
                 'client_tlf' => $data->telefono,
                 'client_name' => $data->nombre,
                 'comment' => $data->comentario,
-                'hash_identifier' => Hash::make(now()),
+                'hash_identifier' => Str::random(16)
             ]);
         }catch(\Exception $e){
             $response["status"]=0;
