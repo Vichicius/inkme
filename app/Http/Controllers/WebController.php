@@ -29,7 +29,7 @@ class WebController extends Controller
         ]);
         //fotoperfil, nombre, fotopost, descripcion,fecha
     }
-    function activarCita(Request $request,int $id){
+    function activarCita(Request $request,string $id){
         $cita = Post::where('hash_identifier',$id)->first();
         $cita->state = 'active';
         $cita->save();
