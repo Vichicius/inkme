@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Cita extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'date',
+        'client_tlf',
+        'client_name',
+        'comment',
+        'hash_identifier',
+    ];
 }

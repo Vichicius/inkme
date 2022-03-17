@@ -19,4 +19,5 @@ Route::get('/', function () {
 });
 
 Route::get('/post/{id}', [WebController::class,'cargarPost']);
+Route::get('/activarCita/{id}', [WebController::class,'activarCita']);
 

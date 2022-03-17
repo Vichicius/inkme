@@ -15,12 +15,13 @@ class CreateCitasTable extends Migration
     {
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
+            $table->string('hash_identifier');
             $table->integer('user_id');
-            $table->string('date'); //poner tipo fecha
-            $table->string('title');
-            $table->string('client_name')->nullable();
-            $table->string('tattoo_description')->nullable();
-            $table->boolean('active')->default(true);
+            $table->date('date'); //poner tipo fecha
+            $table->string('client_tlf');
+            $table->string('client_name');
+            $table->string('comment');
+            $table->enum('state', ['pending', 'active', 'denied'])->default('pending');
             $table->timestamps();
         });
     }

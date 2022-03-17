@@ -15,6 +15,7 @@ class Encargo extends Mailable
     public $nombre;
     public $comentario;
     public $telefono;
+    public $hash_identifier;
 
 
     /**
@@ -22,12 +23,13 @@ class Encargo extends Mailable
      *
      * @return void
      */
-    public function __construct($nombre,$comentario,$telefono)
+    public function __construct($nombre,$comentario,$telefono,$hash_identifier)
     {
         //
         $this->nombre = $nombre;
         $this->comentario = $comentario;
         $this->telefono = $telefono;
+        $this->hash_identifier = $hash_identifier;
     }
 
     /**
