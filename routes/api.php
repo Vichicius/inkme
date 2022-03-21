@@ -34,10 +34,10 @@ Route::middleware('login')->group(function () {
     Route::put('/desactivarCita', [MailController::class,'desactivarCita']);
     Route::put('/aceptarCita', [MailController::class,'aceptarCita']);
 
-    Route::post('/subirImagen', [PostController::class,'subirImagen']);
+    //Route::post('/subirImagen', [PostController::class,'subirImagen']);
 });
 
-//Route::post('/subirImagen', [PostController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
+Route::post('/subirImagen', [PostController::class,'subirImagen']);//mirar si se puede pasar el apitoken a la vez que la imagen para ponerla dentro del middleware
 
 Route::put('/cargarPost', [PostController::class,'cargarPost']);
 Route::put('/cargarPerfil', [UsuarioController::class,'cargarPerfil']);
