@@ -242,7 +242,7 @@ class UsuarioController extends Controller
         $response["status"]=1;
         try{
             if(isset($data->user_id) && isset($data->api_token)){
-                $user = Usuario::find($data->user_id)->where('active', 1)->first();
+                $user = Usuario::where('id', $data->user_id)->where('active', 1)->first();
                 if(!isset($user)) throw new Exception("Error: usuario no existe",500);
                 if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
                     $user->viewsTatuadores += 1;
