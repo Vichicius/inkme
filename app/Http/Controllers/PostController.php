@@ -352,7 +352,7 @@ class PostController extends Controller
         $response["status"]=1;
         try{
             if(isset($data->post_id) && isset($data->api_token)){
-                $post = Post::find($data->post_id)->where('active', 1)->first();
+                $post = Post::where('id', $data->post_id)->where('active', 1)->first();
                 if(!isset($post)) throw new Exception("Error: Post no existe",500);
                 if($data->api_token != ""){//si es tatuador: añadir una view como tatuador
                     $post->viewsTatuadores += 1;
