@@ -290,6 +290,7 @@ class PostController extends Controller
             $response["users"] = $lista1;
         }catch(\Exception $e){
             if($e->getCode() == 501){
+                $response["status"] = 0;
                 $usuarios = Usuario::all()->shuffle();
                 $lista1 = [];
                 foreach ($usuarios as $key => $usuario) {
