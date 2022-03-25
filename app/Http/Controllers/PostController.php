@@ -420,7 +420,15 @@ class PostController extends Controller
                 if(!isset($posts) || count($posts) == 0){
                     throw new Exception("Error: No se encuentran posts.",500);
                 }
-                $response["post"] = $posts;
+                $lista1 = [];
+                foreach ($posts as $key => $post) {
+                    $lista2 = $post;
+                    $user = Usuario::find($post->usuario_id);
+                    $lista["userNick"] = $user->name;
+                    $lista["userProfPic"] = $user->profile_picture;
+                    array_push($lista1, $lista2);
+                }
+                $response["post"] = $lista1;
             }else{
                 throw new Exception("Error: Introduce style",400);
             }
