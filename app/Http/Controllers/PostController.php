@@ -287,7 +287,7 @@ class PostController extends Controller
             if(count($lista1) == 0) {
                 throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",501);
             }
-            $response["usuarios"] = $lista1;
+            $response["users"] = $lista1;
         }catch(\Exception $e){
             if($e->getCode() == 501){
                 $usuarios = Usuario::all()->shuffle();
@@ -312,7 +312,7 @@ class PostController extends Controller
                         ]);
                     }
                 }
-                $response["usuarios"] = $lista1;
+                $response["users"] = $lista1;
             }else {
                 $response["status"]=$e->getCode();
                 $response["msg"]=$e->getMessage();
