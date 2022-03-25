@@ -290,7 +290,29 @@ class PostController extends Controller
             $response["usuarios"] = $lista1;
         }catch(\Exception $e){
             if($e->getCode() == 501){
-                $response["usuarios"] = Usuario::all()->shuffle();
+                $usuarios = Usuario::all()->shuffle();
+                $lista1 = [];
+                foreach ($usuarios as $key => $usuario) {
+                    if(isset($data->api_token) && ($usuario == Usuario::where('api_token', $data->api_token)->first())){
+                        continue;
+                    }
+                    if($usuario->active == 0){
+                        continue;
+                    }
+                    //filtrar que los usuarios tengan al menos 3 posts
+                    $posts = Post::orderBy('id', 'DESC')->where('user_id', $usuario->id)->where('active',1)->get(['id', 'user_id', 'photo']);
+                    if(count($posts) >= 3){
+                        array_push($lista1, [
+                            "id"=>$usuario->id,
+                            "name"=>$usuario->name,
+                            "profile_picture"=>$usuario->profile_picture,
+                            "location"=>$usuario->location,
+                            "styles"=>$usuario->styles,
+                            "posts"=>$posts
+                        ]);
+                    }
+                }
+                $response["usuarios"] = $lista1;
             }else {
                 $response["status"]=$e->getCode();
                 $response["msg"]=$e->getMessage();
