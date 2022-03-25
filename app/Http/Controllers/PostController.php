@@ -424,8 +424,8 @@ class PostController extends Controller
                 foreach ($posts as $key => $post) {
                     $lista2 = $post;
                     $user = Usuario::find($post->user_id);
-                    $lista["userNick"] = $user->name;
-                    $lista["userProfPic"] = $user->profile_picture;
+                    $lista2["userNick"] = $user->name;
+                    $lista2["userProfPic"] = $user->profile_picture;
                     array_push($lista1, $lista2);
                 }
                 $response["post"] = $lista1;
