@@ -267,7 +267,7 @@ class PostController extends Controller
 
 
             if(count($usuarios) == 0) {
-                throw new Exception("No hay coincidencias.",500);
+                throw new Exception("No hay coincidencias.",501);
             }
 
             //Necesito un array de usuarios llamado $usuarios con id name profpic location styles
@@ -293,12 +293,16 @@ class PostController extends Controller
                 }
             }
             if(count($lista1) == 0) {
-                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",500);
+                throw new Exception("Ninguna de las coincidencias tiene al menos 3 posts.",501);
             }
             $response["usuarios"] = $lista1;
         }catch(\Exception $e){
-            $response["status"]=$e->getCode();
-            $response["msg"]=$e->getMessage();
+            if($e->getCode() == 501){
+                $response["usuarios"] = Usuario::all()->shuffle();
+            }else {
+                $response["status"]=$e->getCode();
+                $response["msg"]=$e->getMessage();
+            }
         }
         return response()->json($response);
     }
