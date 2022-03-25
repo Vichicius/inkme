@@ -423,7 +423,7 @@ class PostController extends Controller
                 $lista1 = [];
                 foreach ($posts as $key => $post) {
                     $lista2 = $post;
-                    $user = Usuario::find($post->usuario_id);
+                    $user = Usuario::find($post->user_id);
                     $lista["userNick"] = $user->name;
                     $lista["userProfPic"] = $user->profile_picture;
                     array_push($lista1, $lista2);
