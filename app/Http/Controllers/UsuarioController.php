@@ -108,16 +108,11 @@ class UsuarioController extends Controller
                 }
                 $response["msg"]="usuario encontrado.";
 
-                $response["usuario"]["nombre"] = $usuario->name;
-                $response["usuario"]["email"] = $usuario->email;
-                $response["usuario"]["foto"] = $usuario->profile_picture;
-                $response["usuario"]["ubicacion"] = $usuario->location;
-                $response["usuario"]["estudio_id"] = $usuario->estudio_id;
-                $response["usuario"]["styles"] = $usuario->styles;
+                $response["user"] = $usuario;
 
                 $ImagenesURLeID = Post::orderBy('id', 'DESC')->where('user_id',$data->usuario_id)->where('active',1)->get();
 
-                $response["usuario"]["posts"] = $ImagenesURLeID;
+                $response["user"]["posts"] = $ImagenesURLeID;
             }else{
                 throw new Exception("Error: Introduce usuario_id",400);
             }
@@ -183,7 +178,7 @@ class UsuarioController extends Controller
                 array_pop($inputEstilos); //elimino el ultimo elemento ya que al hacer explode con , se queda un caracter vacío al final del array
                 foreach ($inputEstilos as $key => $value) {
                     if(!in_array($value, $estilosExistentes)){
-                        $response["estilos"] = $estilosExistentes;
+                        $response["styles"] = $estilosExistentes;
                         throw new Exception("El estilo $value no existe. Introduce los estilos de la siguiente forma: 'estilo1, estilo2, estilo3, ...' ",401);
                     }
                 }
@@ -220,8 +215,8 @@ class UsuarioController extends Controller
                 }
                 $top3posts = $posts->take(3);
                 $response['total'] = $viewsTotales;
-                $response['clientes'] = $viewsClientes;
-                $response['tatuadores'] = $viewsTatuadores;
+                $response['clients'] = $viewsClientes;
+                $response['tattooist'] = $viewsTatuadores;
                 $response['top3'] = $top3posts;
                 return response()->json($response);
 

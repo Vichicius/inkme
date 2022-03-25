@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
-    public function crearPost(Request $req){ //Pide: api_token, title, description(opcional) photo style bcolor || Devuelve: "status" "msg" y "post_id"
+    public function crearPost(Request $req){ //Pide: api_token, title, description photo style bcolor || Devuelve: "status" "msg" y "post_id"
         $jdata = $req->getContent();
         $data = json_decode($jdata);
 
@@ -64,7 +64,7 @@ class PostController extends Controller
                 $user = Usuario::find($post->user_id);
                 $response["msg"]="Post encontrado.";
                 $response["post"] = $post;
-                $response["usuario"] = $user;
+                $response["user"] = $user;
             }else{
                 throw new Exception("Error: Introduce post_id",400);
             }
@@ -128,7 +128,7 @@ class PostController extends Controller
                 if(count($listaArticulos) == 0){
                     throw new Exception("No tiene ningún articulo en venta.",500);
                 }
-                $response["articulos"] = $listaArticulos;
+                $response["articles"] = $listaArticulos;
             }else{
                 throw new Exception("Error: Introduce usuario_id",400);
             }
@@ -151,15 +151,7 @@ class PostController extends Controller
                 if(!isset($articulo)|| $articulo->active == false){
                     throw new Exception("Error: No se encuentra el articulo.",500);
                 }
-                $response["articulo"] = $articulo;
-                // $response = [
-                //     "status"=>1,
-                //     [
-                //         "id" => $articulo->id,
-                //         "id" => $articulo
-                //         "id" => $articulo
-                //     ]
-                // ];
+                $response["article"] = $articulo;
             }else{
                 throw new Exception("Error: Introduce articulo_id",400);
             }
