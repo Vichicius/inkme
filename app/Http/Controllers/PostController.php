@@ -280,6 +280,7 @@ class PostController extends Controller
                         "profile_picture"=>$usuario->profile_picture,
                         "location"=>$usuario->location,
                         "styles"=>$usuario->styles,
+                        "viewsTotales"=>$usuario->viewsTotales,
                         "posts"=>$posts
                     ]);
                 }
@@ -309,6 +310,7 @@ class PostController extends Controller
                             "profile_picture"=>$usuario->profile_picture,
                             "location"=>$usuario->location,
                             "styles"=>$usuario->styles,
+                            "viewsTotales"=>$usuario->viewsTotales,
                             "posts"=>$posts
                         ]);
                     }
